@@ -3,27 +3,37 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RingModelData", menuName = "Glow Rings/Ring Model Data")]
 public class RingModelData : ScriptableObject
 {
-    [SerializeField] private GameObject outerRingModel;
-    [SerializeField] private GameObject middleRingModel;
-    [SerializeField] private GameObject innerRingModel;
+    [Header("Model Prefabs")]
+    [SerializeField] private GameObject outerModelPrefab;
+    [SerializeField] private GameObject middleModelPrefab;
+    [SerializeField] private GameObject innerModelPrefab;
+
+    public GameObject OuterModelPrefab => outerModelPrefab;
+    public GameObject MiddleModelPrefab => middleModelPrefab;
+    public GameObject InnerModelPrefab => innerModelPrefab;
+
+    public bool IsValid()
+    {
+        return outerModelPrefab != null &&
+               middleModelPrefab != null &&
+               innerModelPrefab != null;
+    }
 
     public GameObject GetModel(RingLayer layer)
     {
         switch (layer)
         {
             case RingLayer.Outer:
-                return outerRingModel;
+                return outerModelPrefab;
+
             case RingLayer.Middle:
-                return middleRingModel;
+                return middleModelPrefab;
+
             case RingLayer.Inner:
-                return innerRingModel;
+                return innerModelPrefab;
+
             default:
                 return null;
         }
-    }
-
-    public bool IsValid()
-    {
-        return outerRingModel != null && middleRingModel != null && innerRingModel != null;
     }
 }

@@ -26,7 +26,19 @@ public class ThemeData : ScriptableObject
 
     public bool IsValid()
     {
-        return ringModelData != null && ringModelData.IsValid() && ringColors != null && ringColors.Length > 0;
+        if (ringModelData == null || !ringModelData.IsValid())
+            return false;
+
+        if (ringColors == null || ringColors.Length == 0)
+            return false;
+
+        for (int i = 0; i < ringColors.Length; i++)
+        {
+            if (ringColors[i] == null || !ringColors[i].IsValid())
+                return false;
+        }
+
+        return true;
     }
 
     public RingColorData GetRandomColor()

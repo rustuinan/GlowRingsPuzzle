@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c44a5946aab754cb1e6a54d0a33b43, type: 3}
   m_Name: Yellow
   m_EditorClassIdentifier: 
-  colorType: 3
+  colorType: 5
   material: {fileID: 2100000, guid: 45acf96b09b50014aaba2fe8002b08a6, type: 2}

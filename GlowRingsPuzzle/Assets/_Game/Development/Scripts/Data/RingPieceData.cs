@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RingPieceData", menuName = "Glow Rings/Ring Piece Data")]
 public class RingPieceData : ScriptableObject
 {
+    [Header("Layers")]
     [SerializeField] private bool hasOuter;
     [SerializeField] private bool hasMiddle;
     [SerializeField] private bool hasInner;
@@ -19,12 +20,26 @@ public class RingPieceData : ScriptableObject
         {
             case RingLayer.Outer:
                 return hasOuter;
+
             case RingLayer.Middle:
                 return hasMiddle;
+
             case RingLayer.Inner:
                 return hasInner;
+
             default:
                 return false;
         }
+    }
+
+    public int GetLayerCount()
+    {
+        int count = 0;
+
+        if (hasOuter) count++;
+        if (hasMiddle) count++;
+        if (hasInner) count++;
+
+        return count;
     }
 }

@@ -511,7 +511,7 @@ public class BoardManager : MonoBehaviour
         RingColorType.Green,
         RingColorType.Yellow,
         RingColorType.Purple,
-        RingColorType.Cyan
+        RingColorType.Pink
     };
 
         for (int i = 0; i < colors.Length; i++)

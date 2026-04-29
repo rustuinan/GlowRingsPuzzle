@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c44a5946aab754cb1e6a54d0a33b43, type: 3}
   m_Name: Pink
   m_EditorClassIdentifier: 
-  colorType: 5
+  colorType: 1
   material: {fileID: 2100000, guid: b5270697a9a32a1429edc93d48e595bc, type: 2}
