@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5832868650572f547986d5270bdac650, type: 3}
+  m_Name: ThemeData
+  m_EditorClassIdentifier: 
+  themeName: Default
+  requiredScore: 0
+  ringModelData: {fileID: 11400000, guid: aec260652a42dd64084ad59cd97bd633, type: 2}
+  ringColors:
+  - {fileID: 11400000, guid: 4890b86e51c9e7846aed6677427f9bb4, type: 2}
+  - {fileID: 11400000, guid: 865de93fcd1342e49be940e41cff8a97, type: 2}
+  - {fileID: 11400000, guid: 83165e7fdaa8551439372f972e56d601, type: 2}
+  - {fileID: 11400000, guid: d9d447ca1cd79a841b35b35f4d5dc42e, type: 2}
+  - {fileID: 11400000, guid: ec9ef9424d1e2504e8e297f343da1375, type: 2}
+  - {fileID: 11400000, guid: 8cc871a4027ea5c40b1867f88a81251f, type: 2}
+  boardMaterial: {fileID: 0}
+  cellMaterial: {fileID: 0}
+  backgroundMaterial: {fileID: 0}
