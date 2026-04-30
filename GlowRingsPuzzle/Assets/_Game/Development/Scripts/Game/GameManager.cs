@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +20,23 @@ public class GameManager : MonoBehaviour
     [Header("Feedback")]
     [SerializeField] private GameplayFeedbackManager gameplayFeedbackManager;
 
+    [Header("Game Over UI")]
+    [SerializeField] private GameOverPanelUI gameOverPanelUI;
+
+    [Header("Trash")]
+    [SerializeField] private int startingTrashCount = 3;
+    [SerializeField] private TMP_Text trashCountText;
+    [SerializeField] private Button trashButton;
+
+    [Header("Trash Piece Animation")]
+    [SerializeField] private Transform trashFlyTarget;
+    [SerializeField] private float trashAnimationDuration = 0.34f;
+    [SerializeField] private float trashLiftAmount = 0.16f;
+    [SerializeField] private float trashShrinkScale = 0.05f;
+    [SerializeField] private Vector3 trashRotationPunch = new Vector3(0f, 210f, 25f);
+    [SerializeField] private Ease trashMoveEase = Ease.InCubic;
+    [SerializeField] private Ease trashScaleEase = Ease.InBack;
+
     [Header("Piece Spawner Method Settings")]
     [Tooltip("PieceSpawner içindeki spawn method adı. Boş bırakırsan otomatik bulmaya çalışır.")]
     [SerializeField] private string spawnMethodName = "";
@@ -31,11 +51,13 @@ public class GameManager : MonoBehaviour
 
     private bool isResolving;
     private bool isGameOver;
+    private bool isTrashAnimating;
     private int comboCount;
+    private int currentTrashCount;
 
     public bool IsResolving
     {
-        get { return isResolving; }
+        get { return isResolving || isTrashAnimating; }
     }
 
     public bool IsGameOver
@@ -48,6 +70,16 @@ public class GameManager : MonoBehaviour
         get { return comboCount; }
     }
 
+    public int CurrentTrashCount
+    {
+        get { return currentTrashCount; }
+    }
+
+    public int StartingTrashCount
+    {
+        get { return startingTrashCount; }
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -57,14 +89,19 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-
         FindMissingReferences();
     }
 
     private void Start()
     {
+        if (gameOverPanelUI != null)
+        {
+            gameOverPanelUI.HideImmediate();
+        }
+
         if (!startGameOnStart)
         {
+            RefreshTrashUI();
             return;
         }
 
@@ -92,6 +129,11 @@ public class GameManager : MonoBehaviour
         {
             gameplayFeedbackManager = FindObjectOfType<GameplayFeedbackManager>();
         }
+
+        if (gameOverPanelUI == null)
+        {
+            gameOverPanelUI = FindObjectOfType<GameOverPanelUI>(true);
+        }
     }
 
     public void StartGame()
@@ -104,8 +146,16 @@ public class GameManager : MonoBehaviour
         }
 
         isResolving = false;
+        isTrashAnimating = false;
         isGameOver = false;
         comboCount = 0;
+
+        if (gameOverPanelUI != null)
+        {
+            gameOverPanelUI.HideImmediate();
+        }
+
+        ResetTrashCount();
 
         if (ScoreManager.Instance != null)
         {
@@ -117,9 +167,14 @@ public class GameManager : MonoBehaviour
             ThemeManager.Instance.UpdateThemeByScore(0);
         }
 
-        pieceSpawner.ClearCurrentPiece();
-        SpawnPieceFromSpawner();
+        SafeClearBoard();
 
+        if (pieceSpawner != null)
+        {
+            pieceSpawner.ClearCurrentPiece();
+        }
+
+        SpawnPieceFromSpawner();
         CheckGameOver();
     }
 
@@ -159,6 +214,11 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("GameManager: GameplayFeedbackManager atanmadı. UI feedback gösterilmeyecek.");
         }
 
+        if (gameOverPanelUI == null)
+        {
+            Debug.LogWarning("GameManager: GameOverPanelUI atanmadı. Game over paneli gösterilmeyecek.");
+        }
+
         return isValid;
     }
 
@@ -169,7 +229,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (isResolving)
+        if (IsResolving)
         {
             return;
         }
@@ -180,6 +240,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator ResolveMatchesRoutine()
     {
         isResolving = true;
+        RefreshTrashUI();
 
         List<MatchData> matches = boardManager.FindMatches();
 
@@ -242,6 +303,7 @@ public class GameManager : MonoBehaviour
         }
 
         isResolving = false;
+        RefreshTrashUI();
 
         CheckGameOver();
     }
@@ -253,8 +315,15 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (isResolving)
+        if (IsResolving)
         {
+            return;
+        }
+
+        if (currentTrashCount <= 0)
+        {
+            RefreshTrashUI();
+            Debug.Log("GameManager: Trash hakkı kalmadı.");
             return;
         }
 
@@ -264,17 +333,115 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (pieceSpawner.CurrentPiece == null)
+        {
+            Debug.LogWarning("GameManager: Silinecek current piece yok.");
+            return;
+        }
+
+        StartCoroutine(TrashCurrentPieceRoutine());
+    }
+
+    private IEnumerator TrashCurrentPieceRoutine()
+    {
+        isTrashAnimating = true;
+
+        currentTrashCount--;
+        RefreshTrashUI();
+
+        RingPiece pieceToTrash = pieceSpawner.CurrentPiece;
+
+        if (pieceToTrash == null)
+        {
+            isTrashAnimating = false;
+            RefreshTrashUI();
+            yield break;
+        }
+
+        Transform pieceTransform = pieceToTrash.transform;
+
+        Sequence trashSequence = DOTween.Sequence();
+        trashSequence.SetUpdate(false);
+
+        Vector3 startPosition = pieceTransform.position;
+        Vector3 targetPosition = GetTrashAnimationTargetPosition(startPosition);
+
+        pieceTransform.DOKill();
+
+        trashSequence.Append(
+            pieceTransform.DOMove(
+                startPosition + Vector3.up * trashLiftAmount,
+                trashAnimationDuration * 0.25f
+            ).SetEase(Ease.OutSine)
+        );
+
+        trashSequence.Append(
+            pieceTransform.DOMove(
+                targetPosition,
+                trashAnimationDuration * 0.75f
+            ).SetEase(trashMoveEase)
+        );
+
+        trashSequence.Join(
+            pieceTransform.DOScale(
+                Vector3.one * trashShrinkScale,
+                trashAnimationDuration * 0.75f
+            ).SetEase(trashScaleEase)
+        );
+
+        trashSequence.Join(
+            pieceTransform.DORotate(
+                pieceTransform.eulerAngles + trashRotationPunch,
+                trashAnimationDuration * 0.75f,
+                RotateMode.FastBeyond360
+            ).SetEase(Ease.InOutSine)
+        );
+
+        yield return trashSequence.WaitForCompletion();
+
         pieceSpawner.ClearCurrentPiece();
         SpawnPieceFromSpawner();
 
         comboCount = 0;
 
+        isTrashAnimating = false;
+        RefreshTrashUI();
+
         CheckGameOver();
+    }
+
+    private Vector3 GetTrashAnimationTargetPosition(Vector3 fallbackStartPosition)
+    {
+        if (trashFlyTarget != null)
+        {
+            return trashFlyTarget.position;
+        }
+
+        return fallbackStartPosition + new Vector3(0f, 0.28f, -0.35f);
     }
 
     public void DiscardCurrentPiece()
     {
         TrashCurrentPiece();
+    }
+
+    private void ResetTrashCount()
+    {
+        currentTrashCount = Mathf.Max(0, startingTrashCount);
+        RefreshTrashUI();
+    }
+
+    private void RefreshTrashUI()
+    {
+        if (trashCountText != null)
+        {
+            trashCountText.text = currentTrashCount.ToString();
+        }
+
+        if (trashButton != null)
+        {
+            trashButton.interactable = !isGameOver && !IsResolving && currentTrashCount > 0;
+        }
     }
 
     private void CheckGameOver()
@@ -302,29 +469,105 @@ public class GameManager : MonoBehaviour
         {
             GameOver();
         }
+        else
+        {
+            RefreshTrashUI();
+        }
     }
 
     private void GameOver()
     {
         isGameOver = true;
         isResolving = false;
-
-        Debug.Log("Game Over");
+        isTrashAnimating = false;
 
         if (pieceSpawner != null)
         {
             pieceSpawner.ClearCurrentPiece();
         }
+
+        ResetTrashCount();
+        RefreshTrashUI();
+
+        int currentScore = 0;
+        int currentHighScore = 0;
+
+        if (ScoreManager.Instance != null)
+        {
+            currentScore = ScoreManager.Instance.Score;
+            currentHighScore = ScoreManager.Instance.HighScore;
+        }
+
+        if (gameOverPanelUI != null)
+        {
+            gameOverPanelUI.Show(currentScore, currentHighScore);
+        }
+
+        Debug.Log("Game Over");
     }
 
     public void RestartGame()
     {
-        if (isResolving)
+        if (IsResolving)
         {
             return;
         }
 
         StartGame();
+    }
+
+    private void SafeClearBoard()
+    {
+        if (boardManager == null)
+        {
+            return;
+        }
+
+        BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        string[] possibleNames =
+        {
+            "ClearBoard",
+            "ResetBoard",
+            "ClearAllCells",
+            "ResetAllCells",
+            "Clear",
+            "Reset"
+        };
+
+        for (int i = 0; i < possibleNames.Length; i++)
+        {
+            MethodInfo method = boardManager.GetType().GetMethod(possibleNames[i], flags);
+
+            if (IsValidParameterlessMethod(method))
+            {
+                method.Invoke(boardManager, null);
+                return;
+            }
+        }
+
+        MethodInfo[] methods = boardManager.GetType().GetMethods(flags);
+
+        for (int i = 0; i < methods.Length; i++)
+        {
+            MethodInfo method = methods[i];
+
+            if (!IsValidParameterlessMethod(method))
+            {
+                continue;
+            }
+
+            string lowerName = method.Name.ToLower();
+
+            if ((lowerName.Contains("clear") || lowerName.Contains("reset")) &&
+                (lowerName.Contains("board") || lowerName.Contains("cell")))
+            {
+                method.Invoke(boardManager, null);
+                return;
+            }
+        }
+
+        Debug.LogWarning("GameManager: BoardManager içinde board temizleme methodu bulunamadı. Restart sonrası eski ringler kalıyorsa BoardManager'a public ClearBoard() eklemelisin.");
     }
 
     private void SpawnPieceFromSpawner()
@@ -345,6 +588,7 @@ public class GameManager : MonoBehaviour
         }
 
         spawnMethod.Invoke(pieceSpawner, null);
+        RefreshTrashUI();
     }
 
     private MethodInfo GetSpawnMethod()
@@ -355,7 +599,7 @@ public class GameManager : MonoBehaviour
         {
             MethodInfo explicitMethod = pieceSpawner.GetType().GetMethod(spawnMethodName, flags);
 
-            if (IsValidSpawnMethod(explicitMethod))
+            if (IsValidParameterlessMethod(explicitMethod))
             {
                 return explicitMethod;
             }
@@ -385,7 +629,7 @@ public class GameManager : MonoBehaviour
         {
             MethodInfo method = pieceSpawner.GetType().GetMethod(possibleNames[i], flags);
 
-            if (IsValidSpawnMethod(method))
+            if (IsValidParameterlessMethod(method))
             {
                 return method;
             }
@@ -397,7 +641,7 @@ public class GameManager : MonoBehaviour
         {
             MethodInfo method = methods[i];
 
-            if (!IsValidSpawnMethod(method))
+            if (!IsValidParameterlessMethod(method))
             {
                 continue;
             }
@@ -414,7 +658,7 @@ public class GameManager : MonoBehaviour
         {
             MethodInfo method = methods[i];
 
-            if (!IsValidSpawnMethod(method))
+            if (!IsValidParameterlessMethod(method))
             {
                 continue;
             }
@@ -431,7 +675,7 @@ public class GameManager : MonoBehaviour
         {
             MethodInfo method = methods[i];
 
-            if (!IsValidSpawnMethod(method))
+            if (!IsValidParameterlessMethod(method))
             {
                 continue;
             }
@@ -447,7 +691,7 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    private bool IsValidSpawnMethod(MethodInfo method)
+    private bool IsValidParameterlessMethod(MethodInfo method)
     {
         if (method == null)
         {

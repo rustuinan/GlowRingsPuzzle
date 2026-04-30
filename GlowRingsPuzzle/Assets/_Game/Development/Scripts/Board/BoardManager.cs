@@ -582,6 +582,43 @@ public class BoardManager : MonoBehaviour
         return false;
     }
 
+    public void ClearBoard()
+    {
+        if (cells == null || cells.Length == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < cells.Length; i++)
+        {
+            Cell cell = cells[i];
+
+            if (cell == null)
+            {
+                continue;
+            }
+
+            Ring outerRing = cell.GetRing(RingLayer.Outer);
+            Ring middleRing = cell.GetRing(RingLayer.Middle);
+            Ring innerRing = cell.GetRing(RingLayer.Inner);
+
+            if (outerRing != null)
+            {
+                cell.ClearRing(RingLayer.Outer);
+            }
+
+            if (middleRing != null)
+            {
+                cell.ClearRing(RingLayer.Middle);
+            }
+
+            if (innerRing != null)
+            {
+                cell.ClearRing(RingLayer.Inner);
+            }
+        }
+    }
+
     private void OnDrawGizmos()
     {
         if (!drawGizmos)
