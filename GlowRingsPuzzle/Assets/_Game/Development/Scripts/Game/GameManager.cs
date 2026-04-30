@@ -10,7 +10,12 @@ public class GameManager : MonoBehaviour
     [Header("Core References")]
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private PieceSpawner pieceSpawner;
+
+    [Header("Effect References")]
     [SerializeField] private MatchEffectManager matchEffectManager;
+
+    [Header("Feedback")]
+    [SerializeField] private GameplayFeedbackManager gameplayFeedbackManager;
 
     [Header("Piece Spawner Method Settings")]
     [Tooltip("PieceSpawner içindeki spawn method adı. Boş bırakırsan otomatik bulmaya çalışır.")]
@@ -82,6 +87,11 @@ public class GameManager : MonoBehaviour
         {
             matchEffectManager = FindObjectOfType<MatchEffectManager>();
         }
+
+        if (gameplayFeedbackManager == null)
+        {
+            gameplayFeedbackManager = FindObjectOfType<GameplayFeedbackManager>();
+        }
     }
 
     public void StartGame()
@@ -131,17 +141,22 @@ public class GameManager : MonoBehaviour
 
         if (ScoreManager.Instance == null)
         {
-            Debug.LogWarning("GameManager: ScoreManager.Instance bulunamadı. Skor çalışmayabilir.");
+            Debug.LogWarning("GameManager: ScoreManager.Instance bulunamadı. Skor sistemi çalışmayabilir.");
         }
 
         if (ThemeManager.Instance == null)
         {
-            Debug.LogWarning("GameManager: ThemeManager.Instance bulunamadı. Tema güncellemesi çalışmayabilir.");
+            Debug.LogWarning("GameManager: ThemeManager.Instance bulunamadı. Tema sistemi çalışmayabilir.");
         }
 
         if (matchEffectManager == null)
         {
             Debug.LogWarning("GameManager: MatchEffectManager atanmadı. Match effect oynatılmayacak.");
+        }
+
+        if (gameplayFeedbackManager == null)
+        {
+            Debug.LogWarning("GameManager: GameplayFeedbackManager atanmadı. UI feedback gösterilmeyecek.");
         }
 
         return isValid;
@@ -188,7 +203,9 @@ public class GameManager : MonoBehaviour
                 totalScore += multiMatchBonus * matches.Count;
             }
 
-            if (boardManager.IsBoardEmpty())
+            bool isAllClear = boardManager.IsBoardEmpty();
+
+            if (isAllClear)
             {
                 totalScore += allClearBonus;
             }
@@ -196,6 +213,17 @@ public class GameManager : MonoBehaviour
             if (ScoreManager.Instance != null)
             {
                 ScoreManager.Instance.AddScore(totalScore);
+            }
+
+            if (gameplayFeedbackManager != null)
+            {
+                gameplayFeedbackManager.PlayMatchFeedback(
+                    comboCount,
+                    matches.Count,
+                    clearedRingCount,
+                    isAllClear,
+                    totalScore
+                );
             }
         }
         else
@@ -347,6 +375,8 @@ public class GameManager : MonoBehaviour
             "CreateNewPiece",
             "GeneratePiece",
             "GenerateNewPiece",
+            "SpawnPiece",
+            "SpawnNewPiece",
             "Spawn",
             "CreatePiece"
         };
