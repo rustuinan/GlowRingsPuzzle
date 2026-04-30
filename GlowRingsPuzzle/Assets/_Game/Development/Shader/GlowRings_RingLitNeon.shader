@@ -1,19 +1,26 @@
-Shader "GlowRings/URP/Ring Lit Neon"
+Shader "GlowRings/URP/Ring Lit Neon Controlled"
 {
     Properties
     {
         _BaseColor ("Base Color", Color) = (1, 0, 1, 1)
-        _EmissionColor ("Emission Color", Color) = (1, 0, 1, 1)
-        _EmissionIntensity ("Emission Intensity", Range(0, 5)) = 1.2
+
+        [HDR]_EmissionColor ("Emission Color", Color) = (1, 0, 1, 1)
+        _EmissionIntensity ("Emission Intensity", Range(0, 3)) = 0.85
 
         _RimColor ("Rim Color", Color) = (1, 1, 1, 1)
-        _RimPower ("Rim Power", Range(0.5, 8)) = 3
-        _RimIntensity ("Rim Intensity", Range(0, 4)) = 1
+        _RimPower ("Rim Power", Range(1, 8)) = 3.6
+        _RimIntensity ("Rim Intensity", Range(0, 2)) = 0.35
 
-        _LightWrap ("Light Wrap", Range(0, 1)) = 0.35
-        _AmbientStrength ("Ambient Strength", Range(0, 2)) = 0.65
-        _SpecularStrength ("Specular Strength", Range(0, 2)) = 0.45
-        _SpecularPower ("Specular Power", Range(8, 128)) = 48
+        _LightWrap ("Light Wrap", Range(0, 0.5)) = 0.18
+        _AmbientStrength ("Ambient Strength", Range(0, 1)) = 0.28
+
+        _DiffuseStrength ("Diffuse Strength", Range(0, 1.5)) = 0.65
+
+        _SpecularStrength ("Specular Strength", Range(0, 1)) = 0.22
+        _SpecularPower ("Specular Power", Range(8, 128)) = 56
+
+        _AdditionalLightStrength ("Additional Light Strength", Range(0, 0.5)) = 0.06
+        _ColorPower ("Color Power", Range(0.5, 2)) = 1.0
     }
 
     SubShader
@@ -66,6 +73,7 @@ Shader "GlowRings/URP/Ring Lit Neon"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseColor;
+
                 float4 _EmissionColor;
                 float _EmissionIntensity;
 
@@ -75,8 +83,14 @@ Shader "GlowRings/URP/Ring Lit Neon"
 
                 float _LightWrap;
                 float _AmbientStrength;
+
+                float _DiffuseStrength;
+
                 float _SpecularStrength;
                 float _SpecularPower;
+
+                float _AdditionalLightStrength;
+                float _ColorPower;
             CBUFFER_END
 
             Varyings vert(Attributes input)
@@ -104,18 +118,23 @@ Shader "GlowRings/URP/Ring Lit Neon"
                 float ndotl = dot(normalWS, mainLight.direction);
                 float wrappedLight = saturate((ndotl + _LightWrap) / (1.0 + _LightWrap));
 
-                float3 diffuse = _BaseColor.rgb * wrappedLight * mainLight.color;
+                float3 baseColor = pow(saturate(_BaseColor.rgb), _ColorPower);
+
+                float3 ambient = baseColor * _AmbientStrength;
+
+                float3 diffuse = baseColor * wrappedLight * mainLight.color * _DiffuseStrength;
 
                 float3 halfDir = normalize(mainLight.direction + viewDirWS);
                 float specularTerm = pow(saturate(dot(normalWS, halfDir)), _SpecularPower);
                 float3 specular = specularTerm * _SpecularStrength * mainLight.color;
 
-                float3 ambient = _BaseColor.rgb * _AmbientStrength;
-
                 float rim = 1.0 - saturate(dot(normalWS, viewDirWS));
                 rim = pow(rim, _RimPower);
+
                 float3 rimLight = _RimColor.rgb * rim * _RimIntensity;
 
+                // Emission sabit ama abartısız.
+                // Neon hissi asıl Bloom ile gelecek, shader objeyi beyazlatmayacak.
                 float3 emission = _EmissionColor.rgb * _EmissionIntensity;
 
                 float3 finalColor = ambient + diffuse + specular + rimLight + emission;
@@ -130,8 +149,8 @@ Shader "GlowRings/URP/Ring Lit Neon"
                     float addNdotL = dot(normalWS, light.direction);
                     float addWrapped = saturate((addNdotL + _LightWrap) / (1.0 + _LightWrap));
 
-                    float3 addDiffuse = _BaseColor.rgb * addWrapped * light.color * light.distanceAttenuation;
-                    finalColor += addDiffuse * 0.35;
+                    float3 addDiffuse = baseColor * addWrapped * light.color * light.distanceAttenuation;
+                    finalColor += addDiffuse * _AdditionalLightStrength;
                 }
                 #endif
 
@@ -165,7 +184,6 @@ Shader "GlowRings/URP/Ring Lit Neon"
             struct Attributes
             {
                 float4 positionOS : POSITION;
-                float3 normalOS : NORMAL;
             };
 
             struct Varyings
@@ -176,8 +194,10 @@ Shader "GlowRings/URP/Ring Lit Neon"
             Varyings vert(Attributes input)
             {
                 Varyings output;
+
                 VertexPositionInputs positionInputs = GetVertexPositionInputs(input.positionOS.xyz);
                 output.positionHCS = positionInputs.positionCS;
+
                 return output;
             }
 
