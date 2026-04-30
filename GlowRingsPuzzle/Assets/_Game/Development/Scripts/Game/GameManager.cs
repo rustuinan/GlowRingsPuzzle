@@ -43,8 +43,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Score Settings")]
     [SerializeField] private int pointsPerClearedRing = 10;
-    [SerializeField] private int multiMatchBonus = 100;
-    [SerializeField] private int allClearBonus = 500;
+    [SerializeField] private int multiMatchBonus = 120;
+    [SerializeField] private int allClearBonus = 750;
 
     [Header("Game State")]
     [SerializeField] private bool startGameOnStart = true;
@@ -174,8 +174,15 @@ public class GameManager : MonoBehaviour
             pieceSpawner.ClearCurrentPiece();
         }
 
-        SpawnPieceFromSpawner();
-        CheckGameOver();
+        if (!IsTutorialBlockingInput())
+        {
+            SpawnPieceFromSpawner();
+            CheckGameOver();
+        }
+        else
+        {
+            RefreshTrashUI();
+        }
     }
 
     private bool ValidateReferences()
@@ -220,6 +227,12 @@ public class GameManager : MonoBehaviour
         }
 
         return isValid;
+    }
+
+    private bool IsTutorialBlockingInput()
+    {
+        return FirstMoveTutorialManager.Instance != null &&
+               FirstMoveTutorialManager.Instance.IsTutorialActive;
     }
 
     public void OnPiecePlaced()
@@ -297,7 +310,7 @@ public class GameManager : MonoBehaviour
             ThemeManager.Instance.UpdateThemeByScore(ScoreManager.Instance.Score);
         }
 
-        if (!isGameOver)
+        if (!isGameOver && !IsTutorialBlockingInput())
         {
             SpawnPieceFromSpawner();
         }
@@ -305,13 +318,10 @@ public class GameManager : MonoBehaviour
         isResolving = false;
         RefreshTrashUI();
 
-        CheckGameOver();
-    }
-
-    private bool IsTutorialBlockingInput()
-    {
-        return FirstMoveTutorialManager.Instance != null &&
-               FirstMoveTutorialManager.Instance.IsTutorialActive;
+        if (!IsTutorialBlockingInput())
+        {
+            CheckGameOver();
+        }
     }
 
     public void TrashCurrentPiece()
@@ -412,14 +422,21 @@ public class GameManager : MonoBehaviour
         yield return trashSequence.WaitForCompletion();
 
         pieceSpawner.ClearCurrentPiece();
-        SpawnPieceFromSpawner();
+
+        if (!IsTutorialBlockingInput())
+        {
+            SpawnPieceFromSpawner();
+        }
 
         comboCount = 0;
 
         isTrashAnimating = false;
         RefreshTrashUI();
 
-        CheckGameOver();
+        if (!IsTutorialBlockingInput())
+        {
+            CheckGameOver();
+        }
     }
 
     private Vector3 GetTrashAnimationTargetPosition(Vector3 fallbackStartPosition)
@@ -464,6 +481,12 @@ public class GameManager : MonoBehaviour
 
     private void CheckGameOver()
     {
+        if (IsTutorialBlockingInput())
+        {
+            RefreshTrashUI();
+            return;
+        }
+
         if (isGameOver)
         {
             return;
@@ -590,6 +613,12 @@ public class GameManager : MonoBehaviour
 
     private void SpawnPieceFromSpawner()
     {
+        if (IsTutorialBlockingInput())
+        {
+            RefreshTrashUI();
+            return;
+        }
+
         if (pieceSpawner == null)
         {
             Debug.LogError("GameManager: PieceSpawner yok, yeni piece spawn edilemedi.");
@@ -607,6 +636,64 @@ public class GameManager : MonoBehaviour
 
         spawnMethod.Invoke(pieceSpawner, null);
         RefreshTrashUI();
+    }
+
+    public void ContinueAfterTutorial()
+    {
+        if (isGameOver)
+        {
+            return;
+        }
+
+        if (IsResolving)
+        {
+            StartCoroutine(ContinueAfterTutorialRoutine());
+            return;
+        }
+
+        ContinueAfterTutorialInternal();
+    }
+
+    private IEnumerator ContinueAfterTutorialRoutine()
+    {
+        while (IsResolving)
+        {
+            yield return null;
+        }
+
+        ContinueAfterTutorialInternal();
+    }
+
+    private void ContinueAfterTutorialInternal()
+    {
+        if (isGameOver)
+        {
+            return;
+        }
+
+        if (IsTutorialBlockingInput())
+        {
+            return;
+        }
+
+        if (pieceSpawner == null)
+        {
+            FindMissingReferences();
+        }
+
+        if (pieceSpawner == null)
+        {
+            Debug.LogError("GameManager: PieceSpawner bulunamadı, tutorial sonrası oyun devam edemedi.");
+            return;
+        }
+
+        if (pieceSpawner.CurrentPiece == null)
+        {
+            SpawnPieceFromSpawner();
+        }
+
+        RefreshTrashUI();
+        CheckGameOver();
     }
 
     private MethodInfo GetSpawnMethod()

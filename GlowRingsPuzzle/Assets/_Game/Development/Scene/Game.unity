@@ -767,14 +767,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 97fe1193e9e82374b9aee695cceb4f24, type: 2}
   useBoardAwareWeights: 1
   tryHelpfulSpawn: 1
-  helpfulChance: 0.32
+  helpfulChance: 0.26
   enableAllClearAssist: 1
-  allClearAssistChance: 0.38
-  allClearMaxRingCount: 6
-  allClearCooldownSpawnCount: 5
-  singleLayerWeight: 78
-  doubleLayerWeight: 20
-  tripleLayerWeight: 2
+  allClearAssistChance: 0.28
+  allClearMaxRingCount: 5
+  allClearCooldownSpawnCount: 6
+  singleLayerWeight: 74
+  doubleLayerWeight: 23
+  tripleLayerWeight: 3
   lastSpawnType: 0
   lastSpawnColor: 0
   lastSpawnData: {fileID: 0}
@@ -5289,7 +5289,7 @@ MonoBehaviour:
   pieceSpawner: {fileID: 360093387}
   matchEffectManager: {fileID: 1829207586}
   gameplayFeedbackManager: {fileID: 1278842363}
-  gameOverPanelUI: {fileID: 0}
+  gameOverPanelUI: {fileID: 1225656433}
   startingTrashCount: 5
   trashCountText: {fileID: 1412027820}
   trashButton: {fileID: 1783769946}
@@ -5300,7 +5300,7 @@ MonoBehaviour:
   trashRotationPunch: {x: 0, y: 180, z: 35}
   trashMoveEase: 8
   trashScaleEase: 26
-  spawnMethodName: 
+  spawnMethodName: SpawnNextPiece
   pointsPerClearedRing: 10
   multiMatchBonus: 100
   allClearBonus: 500

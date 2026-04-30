@@ -150,6 +150,7 @@ public class FirstMoveTutorialManager : MonoBehaviour
 
     private bool isTutorialActive;
     private bool isTutorialCompletedThisSession;
+    private bool isAdvancingStep;
     private int currentStepIndex;
     private Cell targetCell;
     private RingPiece currentTutorialPiece;
@@ -174,15 +175,15 @@ public class FirstMoveTutorialManager : MonoBehaviour
 
         Instance = this;
 
+        isTutorialActive = ShouldPlayTutorial();
+
         FindMissingReferences();
     }
 
     private void Start()
     {
-        if (ShouldPlayTutorial())
+        if (isTutorialActive)
         {
-            isTutorialActive = true;
-
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.RefreshTrashUI();
@@ -244,11 +245,13 @@ public class FirstMoveTutorialManager : MonoBehaviour
 
         if (!ValidateBaseSetup())
         {
+            isTutorialActive = false;
             return;
         }
 
         isTutorialActive = true;
         isTutorialCompletedThisSession = false;
+        isAdvancingStep = false;
         currentStepIndex = 0;
 
         if (GameManager.Instance != null)
@@ -261,6 +264,8 @@ public class FirstMoveTutorialManager : MonoBehaviour
 
     private void SetupCurrentStep()
     {
+        isAdvancingStep = false;
+
         if (!isTutorialActive)
         {
             return;
@@ -324,6 +329,11 @@ public class FirstMoveTutorialManager : MonoBehaviour
         if (handHintUI != null && currentTutorialPiece != null && targetCell != null)
         {
             handHintUI.Play(currentTutorialPiece.transform, targetCell.transform);
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RefreshTrashUI();
         }
     }
 
@@ -505,10 +515,17 @@ public class FirstMoveTutorialManager : MonoBehaviour
             return;
         }
 
+        if (isAdvancingStep)
+        {
+            return;
+        }
+
         if (placedCell != targetCell)
         {
             return;
         }
+
+        isAdvancingStep = true;
 
         if (handHintUI != null)
         {
@@ -524,6 +541,16 @@ public class FirstMoveTutorialManager : MonoBehaviour
 
         if (currentStepIndex >= tutorialSteps.Length)
         {
+            yield return null;
+
+            if (GameManager.Instance != null)
+            {
+                while (GameManager.Instance.IsResolving)
+                {
+                    yield return null;
+                }
+            }
+
             CompleteTutorial();
             yield break;
         }
@@ -550,6 +577,7 @@ public class FirstMoveTutorialManager : MonoBehaviour
 
         isTutorialCompletedThisSession = true;
         isTutorialActive = false;
+        isAdvancingStep = false;
         targetCell = null;
         currentTutorialPiece = null;
 
@@ -564,6 +592,7 @@ public class FirstMoveTutorialManager : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RefreshTrashUI();
+            GameManager.Instance.ContinueAfterTutorial();
         }
     }
 

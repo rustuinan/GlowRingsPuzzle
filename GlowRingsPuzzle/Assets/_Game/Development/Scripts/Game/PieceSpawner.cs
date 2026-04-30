@@ -52,6 +52,21 @@ public class PieceSpawner : MonoBehaviour
         get { return currentPiece; }
     }
 
+    public SpawnType LastSpawnType
+    {
+        get { return lastSpawnType; }
+    }
+
+    public RingColorType LastSpawnColor
+    {
+        get { return lastSpawnColor; }
+    }
+
+    public RingPieceData LastSpawnData
+    {
+        get { return lastSpawnData; }
+    }
+
     public void SpawnNextPiece()
     {
         ClearCurrentPiece();
@@ -231,7 +246,7 @@ public class PieceSpawner : MonoBehaviour
     {
         if (fillRatio < 0.30f)
         {
-            return 0.18f;
+            return 0.14f;
         }
 
         if (fillRatio < 0.55f)
@@ -241,25 +256,25 @@ public class PieceSpawner : MonoBehaviour
 
         if (fillRatio < 0.75f)
         {
-            return 0.45f;
+            return 0.38f;
         }
 
         if (fillRatio < 0.88f)
         {
-            return 0.58f;
+            return 0.50f;
         }
 
-        return 0.70f;
+        return 0.62f;
     }
 
     private float GetDynamicAllClearChance(int totalRingCount)
     {
         if (totalRingCount <= 3)
         {
-            return Mathf.Clamp01(allClearAssistChance + 0.22f);
+            return Mathf.Clamp01(allClearAssistChance + 0.14f);
         }
 
-        if (totalRingCount <= 6)
+        if (totalRingCount <= allClearMaxRingCount)
         {
             return Mathf.Clamp01(allClearAssistChance);
         }
