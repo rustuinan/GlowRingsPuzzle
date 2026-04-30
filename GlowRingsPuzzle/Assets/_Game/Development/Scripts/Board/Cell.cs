@@ -156,6 +156,55 @@ public class Cell : MonoBehaviour
         }
     }
 
+    public void ForcePlaceRing(Ring ringPrefab, RingLayer layer, RingColorType colorType)
+    {
+        if (ringPrefab == null)
+        {
+            Debug.LogWarning("Cell: ForcePlaceRing için ringPrefab null.");
+            return;
+        }
+
+        if (ringParent == null)
+        {
+            Debug.LogWarning("Cell: RingParent atanmadı.");
+            return;
+        }
+
+        ClearRing(layer);
+
+        Ring ring = Instantiate(ringPrefab, ringParent);
+        ring.transform.localPosition = Vector3.zero;
+        ring.transform.localRotation = Quaternion.identity;
+        ring.transform.localScale = Vector3.one;
+
+        ring.Initialize(layer, colorType, true);
+
+        RegisterRing(layer, ring);
+    }
+
+    public void ClearAllRings()
+    {
+        ClearRing(RingLayer.Outer);
+        ClearRing(RingLayer.Middle);
+        ClearRing(RingLayer.Inner);
+    }
+
+    private void RegisterRing(RingLayer layer, Ring ring)
+    {
+        if (layer == RingLayer.Outer)
+        {
+            outerRing = ring;
+        }
+        else if (layer == RingLayer.Middle)
+        {
+            middleRing = ring;
+        }
+        else if (layer == RingLayer.Inner)
+        {
+            innerRing = ring;
+        }
+    }
+
     private void OnValidate()
     {
         if (cellRenderer == null && cellVisual != null)

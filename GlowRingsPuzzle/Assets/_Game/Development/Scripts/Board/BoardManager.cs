@@ -598,25 +598,23 @@ public class BoardManager : MonoBehaviour
                 continue;
             }
 
-            Ring outerRing = cell.GetRing(RingLayer.Outer);
-            Ring middleRing = cell.GetRing(RingLayer.Middle);
-            Ring innerRing = cell.GetRing(RingLayer.Inner);
-
-            if (outerRing != null)
-            {
-                cell.ClearRing(RingLayer.Outer);
-            }
-
-            if (middleRing != null)
-            {
-                cell.ClearRing(RingLayer.Middle);
-            }
-
-            if (innerRing != null)
-            {
-                cell.ClearRing(RingLayer.Inner);
-            }
+            cell.ClearAllRings();
         }
+    }
+
+    public Cell GetCell(int index)
+    {
+        if (cells == null)
+        {
+            return null;
+        }
+
+        if (index < 0 || index >= cells.Length)
+        {
+            return null;
+        }
+
+        return cells[index];
     }
 
     private void OnDrawGizmos()

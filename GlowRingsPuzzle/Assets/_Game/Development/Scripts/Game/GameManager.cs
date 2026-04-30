@@ -308,8 +308,20 @@ public class GameManager : MonoBehaviour
         CheckGameOver();
     }
 
+    private bool IsTutorialBlockingInput()
+    {
+        return FirstMoveTutorialManager.Instance != null &&
+               FirstMoveTutorialManager.Instance.IsTutorialActive;
+    }
+
     public void TrashCurrentPiece()
     {
+        if (IsTutorialBlockingInput())
+        {
+            RefreshTrashUI();
+            return;
+        }
+
         if (isGameOver)
         {
             return;
@@ -431,7 +443,7 @@ public class GameManager : MonoBehaviour
         RefreshTrashUI();
     }
 
-    private void RefreshTrashUI()
+    public void RefreshTrashUI()
     {
         if (trashCountText != null)
         {
@@ -440,7 +452,13 @@ public class GameManager : MonoBehaviour
 
         if (trashButton != null)
         {
-            trashButton.interactable = !isGameOver && !IsResolving && currentTrashCount > 0;
+            bool tutorialBlockingInput = IsTutorialBlockingInput();
+
+            trashButton.interactable =
+                !tutorialBlockingInput &&
+                !isGameOver &&
+                !IsResolving &&
+                currentTrashCount > 0;
         }
     }
 
@@ -567,7 +585,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.LogWarning("GameManager: BoardManager içinde board temizleme methodu bulunamadı. Restart sonrası eski ringler kalıyorsa BoardManager'a public ClearBoard() eklemelisin.");
+        Debug.LogWarning("GameManager: BoardManager içinde board temizleme methodu bulunamadı.");
     }
 
     private void SpawnPieceFromSpawner()

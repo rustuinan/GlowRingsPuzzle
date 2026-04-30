@@ -32,27 +32,17 @@ public class PieceSpawner : MonoBehaviour
 
     private RingPiece currentPiece;
 
-    public RingPiece CurrentPiece => currentPiece;
+    public RingPiece CurrentPiece
+    {
+        get { return currentPiece; }
+    }
 
     public void SpawnNextPiece()
     {
         ClearCurrentPiece();
 
-        if (piecePrefab == null)
+        if (!CanSpawn())
         {
-            Debug.LogError("PieceSpawner: Piece Prefab atanmadı.");
-            return;
-        }
-
-        if (spawnPoint == null)
-        {
-            Debug.LogError("PieceSpawner: Spawn Point atanmadı.");
-            return;
-        }
-
-        if (ThemeManager.Instance == null || ThemeManager.Instance.CurrentTheme == null)
-        {
-            Debug.LogError("PieceSpawner: ThemeManager veya CurrentTheme eksik.");
             return;
         }
 
@@ -69,10 +59,34 @@ public class PieceSpawner : MonoBehaviour
         currentPiece.Initialize(selectedData, ThemeManager.Instance.CurrentTheme, selectedColor);
     }
 
+    public RingPiece SpawnForcedPiece(RingPieceData pieceData, RingColorType colorType)
+    {
+        ClearCurrentPiece();
+
+        if (pieceData == null)
+        {
+            Debug.LogWarning("PieceSpawner: Forced spawn için PieceData null.");
+            return null;
+        }
+
+        if (!CanSpawn())
+        {
+            return null;
+        }
+
+        currentPiece = Instantiate(piecePrefab, spawnPoint.position, Quaternion.identity);
+        currentPiece.SetStartPosition(spawnPoint.position);
+        currentPiece.Initialize(pieceData, ThemeManager.Instance.CurrentTheme, colorType);
+
+        return currentPiece;
+    }
+
     public void ClearCurrentPiece()
     {
         if (currentPiece == null)
+        {
             return;
+        }
 
         Destroy(currentPiece.gameObject);
         currentPiece = null;
@@ -81,6 +95,35 @@ public class PieceSpawner : MonoBehaviour
     public void ForgetCurrentPiece()
     {
         currentPiece = null;
+    }
+
+    private bool CanSpawn()
+    {
+        if (piecePrefab == null)
+        {
+            Debug.LogError("PieceSpawner: Piece Prefab atanmadı.");
+            return false;
+        }
+
+        if (spawnPoint == null)
+        {
+            Debug.LogError("PieceSpawner: Spawn Point atanmadı.");
+            return false;
+        }
+
+        if (ThemeManager.Instance == null || ThemeManager.Instance.CurrentTheme == null)
+        {
+            Debug.LogError("PieceSpawner: ThemeManager veya CurrentTheme eksik.");
+            return false;
+        }
+
+        if (pieceDataList == null || pieceDataList.Count == 0)
+        {
+            Debug.LogError("PieceSpawner: Piece Data List boş.");
+            return false;
+        }
+
+        return true;
     }
 
     private RingPieceData SelectPieceData(out RingColorType selectedColor)
@@ -121,7 +164,9 @@ public class PieceSpawner : MonoBehaviour
         RingPieceData weightedData = GetBoardAwareRandomPieceData(fillRatio);
 
         if (weightedData != null)
+        {
             return weightedData;
+        }
 
         return GetRandomPieceData();
     }
@@ -167,12 +212,16 @@ public class PieceSpawner : MonoBehaviour
         RingPieceData data = GetRandomPieceDataByLayerCount(layerCount);
 
         if (data != null)
+        {
             return data;
+        }
 
         data = GetRandomPieceDataByLayerCount(1);
 
         if (data != null)
+        {
             return data;
+        }
 
         return GetRandomPieceData();
     }
@@ -186,17 +235,23 @@ public class PieceSpawner : MonoBehaviour
         int totalWeight = singleWeight + doubleWeight + tripleWeight;
 
         if (totalWeight <= 0)
+        {
             return 1;
+        }
 
         int roll = Random.Range(0, totalWeight);
 
         if (roll < singleWeight)
+        {
             return 1;
+        }
 
         roll -= singleWeight;
 
         if (roll < doubleWeight)
+        {
             return 2;
+        }
 
         return 3;
     }
@@ -207,7 +262,9 @@ public class PieceSpawner : MonoBehaviour
         color = GetRandomThemeColor();
 
         if (boardManager == null)
+        {
             return false;
+        }
 
         if (boardManager.TryFindSingleMatchOpportunity(out RingLayer layer, out color))
         {
@@ -236,76 +293,136 @@ public class PieceSpawner : MonoBehaviour
     private float GetBoardFillRatio(BoardManager boardManager)
     {
         if (boardManager == null || boardManager.Cells == null)
+        {
             return 0f;
-
-        int filled = 0;
-        int total = 0;
+        }
 
         Cell[] cells = boardManager.Cells;
 
-        for (int i = 0; i < cells.Length; i++)
+        if (cells.Length == 0)
         {
-            if (cells[i] == null)
-                continue;
-
-            total += 3;
-
-            if (cells[i].GetRing(RingLayer.Outer) != null) filled++;
-            if (cells[i].GetRing(RingLayer.Middle) != null) filled++;
-            if (cells[i].GetRing(RingLayer.Inner) != null) filled++;
+            return 0f;
         }
 
-        if (total <= 0)
-            return 0f;
+        int filledLayerCount = 0;
+        int totalLayerCount = cells.Length * 3;
 
-        return (float)filled / total;
+        for (int i = 0; i < cells.Length; i++)
+        {
+            Cell cell = cells[i];
+
+            if (cell == null)
+            {
+                continue;
+            }
+
+            if (cell.HasRing(RingLayer.Outer))
+            {
+                filledLayerCount++;
+            }
+
+            if (cell.HasRing(RingLayer.Middle))
+            {
+                filledLayerCount++;
+            }
+
+            if (cell.HasRing(RingLayer.Inner))
+            {
+                filledLayerCount++;
+            }
+        }
+
+        if (totalLayerCount <= 0)
+        {
+            return 0f;
+        }
+
+        return Mathf.Clamp01((float)filledLayerCount / totalLayerCount);
     }
 
     private RingPieceData GetRandomPieceDataByLayerCount(int layerCount)
     {
-        List<RingPieceData> candidates = new List<RingPieceData>();
-
-        for (int i = 0; i < pieceDataList.Count; i++)
+        if (pieceDataList == null || pieceDataList.Count == 0)
         {
-            RingPieceData data = pieceDataList[i];
-
-            if (data == null || !data.HasAnyLayer)
-                continue;
-
-            if (GetLayerCount(data) == layerCount)
-                candidates.Add(data);
+            return null;
         }
 
-        if (candidates.Count == 0)
-            return null;
+        List<RingPieceData> validList = new List<RingPieceData>();
 
-        return candidates[Random.Range(0, candidates.Count)];
-    }
-
-    private RingPieceData GetRandomPieceData()
-    {
-        List<RingPieceData> validPieces = new List<RingPieceData>();
-
-        for (int i = 0; i < pieceDataList.Count; i++)
-        {
-            if (pieceDataList[i] != null && pieceDataList[i].HasAnyLayer)
-                validPieces.Add(pieceDataList[i]);
-        }
-
-        if (validPieces.Count == 0)
-            return null;
-
-        return validPieces[Random.Range(0, validPieces.Count)];
-    }
-
-    private RingPieceData GetPieceByLayers(bool hasOuter, bool hasMiddle, bool hasInner)
-    {
         for (int i = 0; i < pieceDataList.Count; i++)
         {
             RingPieceData data = pieceDataList[i];
 
             if (data == null)
+            {
                 continue;
+            }
+
+            if (data.GetLayerCount() == layerCount)
+            {
+                validList.Add(data);
+            }
+        }
+
+        if (validList.Count == 0)
+        {
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, validList.Count);
+        return validList[randomIndex];
+    }
+
+    private RingPieceData GetRandomPieceData()
+    {
+        if (pieceDataList == null || pieceDataList.Count == 0)
+        {
+            return null;
+        }
+
+        List<RingPieceData> validList = new List<RingPieceData>();
+
+        for (int i = 0; i < pieceDataList.Count; i++)
+        {
+            RingPieceData data = pieceDataList[i];
+
+            if (data == null)
+            {
+                continue;
+            }
+
+            if (!data.HasAnyLayer)
+            {
+                continue;
+            }
+
+            validList.Add(data);
+        }
+
+        if (validList.Count == 0)
+        {
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, validList.Count);
+        return validList[randomIndex];
+    }
+
+    private RingPieceData GetPieceByLayers(bool hasOuter, bool hasMiddle, bool hasInner)
+    {
+        if (pieceDataList == null || pieceDataList.Count == 0)
+        {
+            return null;
+        }
+
+        for (int i = 0; i < pieceDataList.Count; i++)
+        {
+            RingPieceData data = pieceDataList[i];
+
+            if (data == null)
+            {
+                continue;
+            }
 
             if (data.HasOuter == hasOuter &&
                 data.HasMiddle == hasMiddle &&
@@ -318,32 +435,21 @@ public class PieceSpawner : MonoBehaviour
         return null;
     }
 
-    private int GetLayerCount(RingPieceData data)
-    {
-        int count = 0;
-
-        if (data.HasOuter) count++;
-        if (data.HasMiddle) count++;
-        if (data.HasInner) count++;
-
-        return count;
-    }
-
     private RingColorType GetRandomThemeColor()
     {
-        if (ThemeManager.Instance == null)
-            return RingColorType.Red;
+        if (ThemeManager.Instance != null && ThemeManager.Instance.CurrentTheme != null)
+        {
+            RingColorData randomColorData = ThemeManager.Instance.CurrentTheme.GetRandomColor();
 
-        ThemeData theme = ThemeManager.Instance.CurrentTheme;
+            if (randomColorData != null)
+            {
+                return randomColorData.ColorType;
+            }
+        }
 
-        if (theme == null)
-            return RingColorType.Red;
+        int colorCount = System.Enum.GetValues(typeof(RingColorType)).Length;
+        int randomIndex = Random.Range(0, colorCount);
 
-        RingColorData colorData = theme.GetRandomColor();
-
-        if (colorData == null)
-            return RingColorType.Red;
-
-        return colorData.ColorType;
+        return (RingColorType)randomIndex;
     }
 }

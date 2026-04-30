@@ -184,6 +184,11 @@ public class DragAndDrop : MonoBehaviour
             pickedScale,
             pickUpDuration
         ).SetEase(pickUpEase);
+
+        if (FirstMoveTutorialManager.Instance != null)
+        {
+            FirstMoveTutorialManager.Instance.NotifyPieceGrabbed();
+        }
     }
 
     private void DragSelectedPiece()
@@ -284,6 +289,11 @@ public class DragAndDrop : MonoBehaviour
             );
 
             canPlace = distance <= placeDistance && closestCell.CanPlace(selectedPiece);
+
+            if (canPlace && FirstMoveTutorialManager.Instance != null)
+            {
+                canPlace = FirstMoveTutorialManager.Instance.CanPlaceToCell(closestCell);
+            }
         }
 
         if (canPlace)
@@ -348,6 +358,11 @@ public class DragAndDrop : MonoBehaviour
                 pieceTransform.localScale = selectedStartScale;
 
                 targetCell.PlacePiece(pieceToPlace);
+
+                if (FirstMoveTutorialManager.Instance != null)
+                {
+                    FirstMoveTutorialManager.Instance.NotifyPiecePlaced(targetCell);
+                }
 
                 if (GameManager.Instance != null)
                 {
@@ -436,6 +451,11 @@ public class DragAndDrop : MonoBehaviour
 
             isDropAnimating = false;
             ClearSelection();
+
+            if (FirstMoveTutorialManager.Instance != null)
+            {
+                FirstMoveTutorialManager.Instance.NotifyInvalidPlacement();
+            }
         });
     }
 
