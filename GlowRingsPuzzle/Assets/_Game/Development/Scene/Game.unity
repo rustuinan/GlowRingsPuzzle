@@ -767,10 +767,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 97fe1193e9e82374b9aee695cceb4f24, type: 2}
   useBoardAwareWeights: 1
   tryHelpfulSpawn: 1
-  helpfulChance: 0.25
-  singleLayerWeight: 75
-  doubleLayerWeight: 22
-  tripleLayerWeight: 3
+  helpfulChance: 0.32
+  enableAllClearAssist: 1
+  allClearAssistChance: 0.38
+  allClearMaxRingCount: 6
+  allClearCooldownSpawnCount: 5
+  singleLayerWeight: 78
+  doubleLayerWeight: 20
+  tripleLayerWeight: 2
+  lastSpawnType: 0
+  lastSpawnColor: 0
+  lastSpawnData: {fileID: 0}
 --- !u!1 &367994684
 GameObject:
   m_ObjectHideFlags: 0
@@ -870,9 +877,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 1859378717}
   ringParent: {fileID: 674709769}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -2264,9 +2274,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 688406720}
   ringParent: {fileID: 769211361}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -2339,9 +2352,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 1646893796}
   ringParent: {fileID: 1657597868}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -3362,9 +3378,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 367994685}
   ringParent: {fileID: 565464318}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -3518,9 +3537,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 1166933005}
   ringParent: {fileID: 1043382972}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -4074,9 +4096,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 301510424}
   ringParent: {fileID: 480077287}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -4547,9 +4572,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 1059639626}
   ringParent: {fileID: 430530666}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -5498,9 +5526,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 1630252561}
   ringParent: {fileID: 238045738}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
@@ -5573,9 +5604,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb98ab21ca232448b870d4e8503df7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellVisual: {fileID: 0}
+  cellVisual: {fileID: 729931878}
   ringParent: {fileID: 1267693564}
   cellRenderer: {fileID: 0}
+  outerRing: {fileID: 0}
+  middleRing: {fileID: 0}
+  innerRing: {fileID: 0}
   drawGizmos: 1
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
