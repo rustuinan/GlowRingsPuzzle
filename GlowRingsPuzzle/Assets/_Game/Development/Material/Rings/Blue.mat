@@ -97,7 +97,7 @@ Material:
     - _AdditionalLightStrength: 0.03
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _AmbientStrength: 0.22
+    - _AmbientStrength: 0.097
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BodyStrength: 0.18
@@ -110,11 +110,11 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DiffuseStrength: 0.82
+    - _DiffuseStrength: 0.608
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EdgeGlow: 0.75
-    - _EmissionIntensity: 0.75
+    - _EmissionIntensity: 0.52
     - _EnvironmentReflections: 1
     - _FresnelIntensity: 1.25
     - _FresnelPower: 2.6
@@ -129,8 +129,8 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _RimIntensity: 0.86
-    - _RimPower: 3.4
+    - _RimIntensity: 1
+    - _RimPower: 3
     - _SaturationBoost: 1.8
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
@@ -144,9 +144,9 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.28235295, g: 0.74509805, b: 1, a: 1}
+    - _BaseColor: {r: 0.112362035, g: 0.65430325, b: 0.9528302, a: 1}
     - _Color: {r: 0.18943572, g: 0.5543611, b: 0.9339623, a: 1}
-    - _EmissionColor: {r: 0.09411765, g: 0.4627451, b: 0.8235294, a: 1}
+    - _EmissionColor: {r: 0, g: 0.3289714, b: 0.6509434, a: 1}
     - _NeonColor: {r: 0, g: 0.8627451, b: 1, a: 1}
     - _RimColor: {r: 0.7372549, g: 0.93333334, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
