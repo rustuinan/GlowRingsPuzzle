@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f95492f00004ce14086a3e385a78caee, type: 3}
+  m_Name: MatchEffectSettings
+  m_EditorClassIdentifier: 
+  previewDuration: 0.52
+  spawnStagger: 0.01
+  verticalOffset: 0.19
+  towardCameraOffset: 0.07
+  additiveLineMaterial: {fileID: 2100000, guid: 97f489e5c3c1e844e996578f009ffcf7,
+    type: 2}
+  beamExtraLength: 0.1
+  beamCoreColor: {r: 2.25, g: 2.05, b: 1.3, a: 1}
+  beamGlowColor: {r: 1.85, g: 0.95, b: 0.18, a: 1}
+  flareColor: {r: 2.35, g: 1.55, b: 0.45, a: 1}
+  beamStartWidth: 0.22
+  beamPeakWidth: 0.36
+  beamEndWidth: 0.1
+  beamCoreStartWidth: 0.075
+  beamCorePeakWidth: 0.135
+  beamCoreEndWidth: 0.045
+  beamGlowStartWidth: 0.22
+  beamGlowPeakWidth: 0.36
+  beamGlowEndWidth: 0.1
+  endpointFlareStartSize: 0.28
+  endpointFlarePeakSize: 0.48
+  middleFlareStartSize: 0.34
+  middleFlarePeakSize: 0.68
+  sweepFlareSize: 0.32
+  cellBeamStartLength: 0.4
+  cellBeamPeakLength: 1.04
+  cellBeamStartWidth: 0.16
+  cellBeamPeakWidth: 0.34
+  cellBeamEndWidth: 0.09
+  cellCenterFlareStartSize: 0.34
+  cellCenterFlarePeakSize: 0.78
+  cellOuterFlareStartSize: 0.62
+  cellOuterFlarePeakSize: 1.08
+  cellCoreColor: {r: 2.25, g: 2.05, b: 1.3, a: 1}
+  cellGlowColor: {r: 1.85, g: 0.95, b: 0.18, a: 1}
+  cellFlashColor: {r: 2.35, g: 1.55, b: 0.45, a: 1}
+  outerRingStartRadius: 0.24
+  outerRingPeakRadius: 0.58
+  innerRingStartRadius: 0.11
+  innerRingPeakRadius: 0.32
+  cellCoreStartWidth: 0.045
+  cellCorePeakWidth: 0.12
+  cellCoreEndWidth: 0.024
+  cellGlowStartWidth: 0.12
+  cellGlowPeakWidth: 0.28
+  cellGlowEndWidth: 0.04
+  centerFlashStartSize: 0.18
+  centerFlashPeakSize: 0.56
+  haloStartSize: 0.32
+  haloPeakSize: 0.96
+  cellSegments: 56
+  ringMarkerColor: {r: 1.35, g: 0.72, b: 1.3, a: 1}
+  ringMarkerCoreColor: {r: 1.8, g: 1.1, b: 1.9, a: 1}
+  ringMarkerStartRadiusMultiplier: 1.01
+  ringMarkerPeakRadiusMultiplier: 1.09
+  ringMarkerStartWidth: 0.02
+  ringMarkerPeakWidth: 0.04
+  ringMarkerSegments: 48
+  ringMarkerVerticalOffset: 0.032
+  ringFeedbackDuration: 0.5
+  ringPeakScale: 1.07
+  ringLiftAmount: 0.016
+  ringEmissionPeak: 1.8
+  ringRimPeak: 1.42
+  ringWhiteFlashAmount: 0.1
+  cellAuraColor: {r: 1.45, g: 0.58, b: 1.25, a: 1}
+  cellAuraStartRadius: 0.28
+  cellAuraPeakRadius: 0.6
+  cellAuraStartWidth: 0.03
+  cellAuraPeakWidth: 0.08
+  cellAuraSegments: 48

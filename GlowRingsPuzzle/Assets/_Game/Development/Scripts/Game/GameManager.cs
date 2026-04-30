@@ -1,22 +1,47 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [Header("Core References")]
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private PieceSpawner pieceSpawner;
+    [SerializeField] private MatchEffectManager matchEffectManager;
 
+    [Header("Piece Spawner Method Settings")]
+    [Tooltip("PieceSpawner içindeki spawn method adı. Boş bırakırsan otomatik bulmaya çalışır.")]
+    [SerializeField] private string spawnMethodName = "";
+
+    [Header("Score Settings")]
     [SerializeField] private int pointsPerClearedRing = 10;
     [SerializeField] private int multiMatchBonus = 100;
     [SerializeField] private int allClearBonus = 500;
 
-    private int comboCount;
-    private bool gameOver;
+    [Header("Game State")]
+    [SerializeField] private bool startGameOnStart = true;
 
-    public bool IsGameOver => gameOver;
-    public int ComboCount => comboCount;
+    private bool isResolving;
+    private bool isGameOver;
+    private int comboCount;
+
+    public bool IsResolving
+    {
+        get { return isResolving; }
+    }
+
+    public bool IsGameOver
+    {
+        get { return isGameOver; }
+    }
+
+    public int ComboCount
+    {
+        get { return comboCount; }
+    }
 
     private void Awake()
     {
@@ -27,46 +52,194 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+
+        FindMissingReferences();
     }
 
     private void Start()
     {
+        if (!startGameOnStart)
+        {
+            return;
+        }
+
+        StartGame();
+    }
+
+    private void FindMissingReferences()
+    {
         if (boardManager == null)
+        {
             boardManager = FindObjectOfType<BoardManager>();
+        }
 
         if (pieceSpawner == null)
+        {
             pieceSpawner = FindObjectOfType<PieceSpawner>();
+        }
 
-        gameOver = false;
+        if (matchEffectManager == null)
+        {
+            matchEffectManager = FindObjectOfType<MatchEffectManager>();
+        }
+    }
+
+    public void StartGame()
+    {
+        FindMissingReferences();
+
+        if (!ValidateReferences())
+        {
+            return;
+        }
+
+        isResolving = false;
+        isGameOver = false;
         comboCount = 0;
 
-        ScoreManager.Instance.ResetScore();
-        ThemeManager.Instance.UpdateThemeByScore(ScoreManager.Instance.Score);
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ResetScore();
+        }
 
-        pieceSpawner.SpawnNextPiece();
+        if (ThemeManager.Instance != null)
+        {
+            ThemeManager.Instance.UpdateThemeByScore(0);
+        }
+
+        pieceSpawner.ClearCurrentPiece();
+        SpawnPieceFromSpawner();
+
         CheckGameOver();
+    }
+
+    private bool ValidateReferences()
+    {
+        bool isValid = true;
+
+        if (boardManager == null)
+        {
+            Debug.LogError("GameManager: BoardManager referansı bulunamadı.");
+            isValid = false;
+        }
+
+        if (pieceSpawner == null)
+        {
+            Debug.LogError("GameManager: PieceSpawner referansı bulunamadı.");
+            isValid = false;
+        }
+
+        if (ScoreManager.Instance == null)
+        {
+            Debug.LogWarning("GameManager: ScoreManager.Instance bulunamadı. Skor çalışmayabilir.");
+        }
+
+        if (ThemeManager.Instance == null)
+        {
+            Debug.LogWarning("GameManager: ThemeManager.Instance bulunamadı. Tema güncellemesi çalışmayabilir.");
+        }
+
+        if (matchEffectManager == null)
+        {
+            Debug.LogWarning("GameManager: MatchEffectManager atanmadı. Match effect oynatılmayacak.");
+        }
+
+        return isValid;
     }
 
     public void OnPiecePlaced()
     {
-        if (gameOver)
+        if (isGameOver)
+        {
             return;
+        }
 
-        ResolveMatches();
+        if (isResolving)
+        {
+            return;
+        }
 
-        ThemeManager.Instance.UpdateThemeByScore(ScoreManager.Instance.Score);
+        StartCoroutine(ResolveMatchesRoutine());
+    }
 
-        pieceSpawner.SpawnNextPiece();
+    private IEnumerator ResolveMatchesRoutine()
+    {
+        isResolving = true;
+
+        List<MatchData> matches = boardManager.FindMatches();
+
+        if (matches != null && matches.Count > 0)
+        {
+            comboCount++;
+
+            if (matchEffectManager != null)
+            {
+                yield return matchEffectManager.PlayMatches(matches);
+            }
+
+            int clearedRingCount = boardManager.ClearMatches(matches);
+
+            int baseScore = clearedRingCount * pointsPerClearedRing;
+            int comboScore = baseScore * comboCount;
+            int totalScore = comboScore;
+
+            if (matches.Count >= 2)
+            {
+                totalScore += multiMatchBonus * matches.Count;
+            }
+
+            if (boardManager.IsBoardEmpty())
+            {
+                totalScore += allClearBonus;
+            }
+
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.AddScore(totalScore);
+            }
+        }
+        else
+        {
+            comboCount = 0;
+        }
+
+        if (ThemeManager.Instance != null && ScoreManager.Instance != null)
+        {
+            ThemeManager.Instance.UpdateThemeByScore(ScoreManager.Instance.Score);
+        }
+
+        if (!isGameOver)
+        {
+            SpawnPieceFromSpawner();
+        }
+
+        isResolving = false;
+
         CheckGameOver();
     }
 
     public void TrashCurrentPiece()
     {
-        if (gameOver)
+        if (isGameOver)
+        {
             return;
+        }
+
+        if (isResolving)
+        {
+            return;
+        }
+
+        if (pieceSpawner == null)
+        {
+            Debug.LogWarning("GameManager: PieceSpawner yok, trash işlemi yapılamadı.");
+            return;
+        }
 
         pieceSpawner.ClearCurrentPiece();
-        pieceSpawner.SpawnNextPiece();
+        SpawnPieceFromSpawner();
+
+        comboCount = 0;
 
         CheckGameOver();
     }
@@ -76,47 +249,222 @@ public class GameManager : MonoBehaviour
         TrashCurrentPiece();
     }
 
-    private void ResolveMatches()
+    private void CheckGameOver()
     {
-        List<MatchData> matches = boardManager.FindMatches();
-
-        if (matches.Count == 0)
+        if (isGameOver)
         {
-            comboCount = 0;
             return;
         }
 
-        comboCount++;
-
-        int clearedRingCount = boardManager.ClearMatches(matches);
-
-        int baseScore = clearedRingCount * pointsPerClearedRing;
-        int comboScore = baseScore * comboCount;
-        int bonusScore = 0;
-
-        if (matches.Count >= 2)
-            bonusScore += multiMatchBonus * matches.Count;
-
-        if (boardManager.IsBoardEmpty())
-            bonusScore += allClearBonus;
-
-        ScoreManager.Instance.AddScore(comboScore + bonusScore);
-    }
-
-    private void CheckGameOver()
-    {
-        if (pieceSpawner == null || boardManager == null)
+        if (boardManager == null || pieceSpawner == null)
+        {
             return;
+        }
 
         RingPiece currentPiece = pieceSpawner.CurrentPiece;
 
         if (currentPiece == null)
-            return;
-
-        if (!boardManager.HasMove(currentPiece))
         {
-            gameOver = true;
-            Debug.Log("Game Over");
+            return;
         }
+
+        bool hasMove = boardManager.HasMove(currentPiece);
+
+        if (!hasMove)
+        {
+            GameOver();
+        }
+    }
+
+    private void GameOver()
+    {
+        isGameOver = true;
+        isResolving = false;
+
+        Debug.Log("Game Over");
+
+        if (pieceSpawner != null)
+        {
+            pieceSpawner.ClearCurrentPiece();
+        }
+    }
+
+    public void RestartGame()
+    {
+        if (isResolving)
+        {
+            return;
+        }
+
+        StartGame();
+    }
+
+    private void SpawnPieceFromSpawner()
+    {
+        if (pieceSpawner == null)
+        {
+            Debug.LogError("GameManager: PieceSpawner yok, yeni piece spawn edilemedi.");
+            return;
+        }
+
+        MethodInfo spawnMethod = GetSpawnMethod();
+
+        if (spawnMethod == null)
+        {
+            Debug.LogError("GameManager: PieceSpawner içinde uygun spawn methodu bulunamadı. Inspector'daki Spawn Method Name alanına PieceSpawner içindeki gerçek spawn method adını yaz.");
+            LogPieceSpawnerMethods();
+            return;
+        }
+
+        spawnMethod.Invoke(pieceSpawner, null);
+    }
+
+    private MethodInfo GetSpawnMethod()
+    {
+        BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        if (!string.IsNullOrEmpty(spawnMethodName))
+        {
+            MethodInfo explicitMethod = pieceSpawner.GetType().GetMethod(spawnMethodName, flags);
+
+            if (IsValidSpawnMethod(explicitMethod))
+            {
+                return explicitMethod;
+            }
+
+            Debug.LogWarning("GameManager: Inspector'da verilen spawn method adı bulunamadı veya parametre alıyor: " + spawnMethodName);
+        }
+
+        string[] possibleNames =
+        {
+            "SpawnCurrentPiece",
+            "SpawnNextPiece",
+            "SpawnRandomPiece",
+            "SpawnWeightedPiece",
+            "SpawnNewRandomPiece",
+            "SpawnNewCurrentPiece",
+            "CreateCurrentPiece",
+            "CreateNewPiece",
+            "GeneratePiece",
+            "GenerateNewPiece",
+            "Spawn",
+            "CreatePiece"
+        };
+
+        for (int i = 0; i < possibleNames.Length; i++)
+        {
+            MethodInfo method = pieceSpawner.GetType().GetMethod(possibleNames[i], flags);
+
+            if (IsValidSpawnMethod(method))
+            {
+                return method;
+            }
+        }
+
+        MethodInfo[] methods = pieceSpawner.GetType().GetMethods(flags);
+
+        for (int i = 0; i < methods.Length; i++)
+        {
+            MethodInfo method = methods[i];
+
+            if (!IsValidSpawnMethod(method))
+            {
+                continue;
+            }
+
+            string lowerName = method.Name.ToLower();
+
+            if (lowerName.Contains("spawn") && lowerName.Contains("piece"))
+            {
+                return method;
+            }
+        }
+
+        for (int i = 0; i < methods.Length; i++)
+        {
+            MethodInfo method = methods[i];
+
+            if (!IsValidSpawnMethod(method))
+            {
+                continue;
+            }
+
+            string lowerName = method.Name.ToLower();
+
+            if (lowerName.Contains("create") && lowerName.Contains("piece"))
+            {
+                return method;
+            }
+        }
+
+        for (int i = 0; i < methods.Length; i++)
+        {
+            MethodInfo method = methods[i];
+
+            if (!IsValidSpawnMethod(method))
+            {
+                continue;
+            }
+
+            string lowerName = method.Name.ToLower();
+
+            if (lowerName.Contains("generate") && lowerName.Contains("piece"))
+            {
+                return method;
+            }
+        }
+
+        return null;
+    }
+
+    private bool IsValidSpawnMethod(MethodInfo method)
+    {
+        if (method == null)
+        {
+            return false;
+        }
+
+        ParameterInfo[] parameters = method.GetParameters();
+
+        if (parameters != null && parameters.Length > 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void LogPieceSpawnerMethods()
+    {
+        if (pieceSpawner == null)
+        {
+            return;
+        }
+
+        BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        MethodInfo[] methods = pieceSpawner.GetType().GetMethods(flags);
+
+        string log = "PieceSpawner içindeki parametresiz methodlar:\n";
+
+        for (int i = 0; i < methods.Length; i++)
+        {
+            MethodInfo method = methods[i];
+
+            if (method == null)
+            {
+                continue;
+            }
+
+            ParameterInfo[] parameters = method.GetParameters();
+
+            if (parameters != null && parameters.Length > 0)
+            {
+                continue;
+            }
+
+            log += "- " + method.Name + "\n";
+        }
+
+        Debug.Log(log);
     }
 }

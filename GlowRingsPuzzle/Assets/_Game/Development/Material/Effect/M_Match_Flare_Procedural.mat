@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2735054762818716555
+--- !u!114 &-6811403597335449416
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Yellow
-  m_Shader: {fileID: 4800000, guid: 56fd22db1a4533e4f91c09f084175dda, type: 3}
+  m_Name: M_Match_Flare_Procedural
+  m_Shader: {fileID: 4800000, guid: 9c5a2947d5b84bb4cbd13e6cafebc663, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -94,9 +94,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Alpha: 1
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _AmbientStrength: 0.65
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -108,33 +108,32 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _EmissionIntensity: 0.55
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _LightWrap: 0.35
+    - _GlowPower: 1.45
+    - _Intensity: 4
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _RimIntensity: 0.75
-    - _RimPower: 2.8
+    - _Rotation: 0
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularPower: 48
-    - _SpecularStrength: 0.45
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
+    - _StarSharpness: 28
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.9607843, g: 0.9019608, b: 0.21568628, a: 1}
-    - _Color: {r: 0.8679245, g: 0.8336971, b: 0.12691346, a: 1}
-    - _EmissionColor: {r: 0.8627451, g: 0.74509805, b: 0.13725491, a: 1}
-    - _RimColor: {r: 1, g: 0.9882353, b: 0.8627451, a: 1}
+    - _AccentColor: {r: 1, g: 0.33333334, b: 0.8235294, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.8039216, b: 0.21568628, a: 1}
+    - _CoreColor: {r: 1, g: 1, b: 0.9607843, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
