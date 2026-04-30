@@ -2,89 +2,219 @@ using UnityEngine;
 
 public class Ring : MonoBehaviour
 {
+    [Header("Ring Data")]
     [SerializeField] private RingLayer layer;
+    [SerializeField] private RingColorType colorType;
+
+    [Header("Runtime Model")]
     [SerializeField] private Transform modelParent;
+    [SerializeField] private GameObject currentModel;
 
-    private RingColorType colorType;
-    private bool initialized;
-    private GameObject currentModel;
+    private Renderer[] currentRenderers;
 
-    public RingLayer Layer => layer;
-    public RingColorType ColorType => colorType;
+    public RingLayer Layer
+    {
+        get { return layer; }
+    }
+
+    public RingColorType ColorType
+    {
+        get { return colorType; }
+    }
+
+    private void Awake()
+    {
+        if (modelParent == null)
+        {
+            modelParent = transform;
+        }
+    }
 
     private void OnEnable()
     {
-        ThemeManager.ThemeChanged += OnThemeChanged;
+        if (ThemeManager.Instance != null)
+        {
+            ThemeManager.Instance.ThemeChanged += OnThemeChanged;
+        }
+
+        ApplyCurrentTheme();
     }
 
     private void OnDisable()
     {
-        ThemeManager.ThemeChanged -= OnThemeChanged;
+        if (ThemeManager.Instance != null)
+        {
+            ThemeManager.Instance.ThemeChanged -= OnThemeChanged;
+        }
     }
 
-    public void Initialize(RingLayer newLayer, RingColorType newColorType, ThemeData themeData)
+    public void Initialize(RingLayer newLayer, RingColorType newColorType)
     {
         layer = newLayer;
         colorType = newColorType;
-        initialized = true;
-        RefreshVisual(themeData);
+
+        gameObject.SetActive(true);
+
+        ApplyCurrentTheme();
     }
 
-    public void RefreshVisual(ThemeData themeData)
+    public void Initialize(RingLayer newLayer, RingColorType newColorType, bool isActive)
     {
-        if (!initialized || themeData == null)
+        layer = newLayer;
+        colorType = newColorType;
+
+        gameObject.SetActive(isActive);
+
+        if (!isActive)
+        {
             return;
+        }
 
-        ClearModel();
+        ApplyCurrentTheme();
+    }
 
-        GameObject modelPrefab = themeData.RingModelData != null ? themeData.RingModelData.GetModel(layer) : null;
-        RingColorData colorData = themeData.GetColorData(colorType);
+    public void SetLayer(RingLayer newLayer)
+    {
+        layer = newLayer;
 
-        CreateModel(modelPrefab);
-        ApplyMaterial(colorData);
-        transform.localScale = Vector3.one;
+        ApplyCurrentTheme();
+    }
+
+    public void SetColor(RingColorType newColorType)
+    {
+        colorType = newColorType;
+
+        ApplyCurrentTheme();
+    }
+
+    public void SetActiveState(bool isActive)
+    {
+        gameObject.SetActive(isActive);
+
+        if (isActive)
+        {
+            ApplyCurrentTheme();
+        }
     }
 
     private void OnThemeChanged(ThemeData themeData)
     {
-        RefreshVisual(themeData);
-    }
-
-    private void CreateModel(GameObject modelPrefab)
-    {
-        if (modelPrefab == null)
+        if (!gameObject.activeInHierarchy)
         {
-            Debug.LogError("Ring model prefab eksik. Layer: " + layer);
             return;
         }
 
-        Transform parent = modelParent != null ? modelParent : transform;
-        currentModel = Instantiate(modelPrefab, parent);
+        ApplyTheme(themeData);
+    }
+
+    private void ApplyCurrentTheme()
+    {
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
+        if (ThemeManager.Instance == null)
+        {
+            return;
+        }
+
+        ThemeData currentTheme = ThemeManager.Instance.CurrentTheme;
+
+        if (currentTheme == null)
+        {
+            return;
+        }
+
+        ApplyTheme(currentTheme);
+    }
+
+    private void ApplyTheme(ThemeData themeData)
+    {
+        if (themeData == null)
+        {
+            return;
+        }
+
+        ApplyModel(themeData);
+        ApplyMaterial(themeData);
+
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+    }
+
+    private void ApplyModel(ThemeData themeData)
+    {
+        if (themeData.RingModelData == null)
+        {
+            return;
+        }
+
+        GameObject modelPrefab = themeData.RingModelData.GetModel(layer);
+
+        if (modelPrefab == null)
+        {
+            Debug.LogWarning("Ring: Model prefab bulunamadı. Layer: " + layer);
+            return;
+        }
+
+        if (currentModel != null)
+        {
+            DestroyImmediateSafe(currentModel);
+            currentModel = null;
+        }
+
+        currentModel = Instantiate(modelPrefab, modelParent);
         currentModel.transform.localPosition = Vector3.zero;
         currentModel.transform.localRotation = Quaternion.identity;
         currentModel.transform.localScale = Vector3.one;
+
+        currentRenderers = currentModel.GetComponentsInChildren<Renderer>(true);
     }
 
-    private void ApplyMaterial(RingColorData colorData)
+    private void ApplyMaterial(ThemeData themeData)
     {
+        RingColorData colorData = themeData.GetColorData(colorType);
+
         if (colorData == null || colorData.Material == null)
         {
-            Debug.LogError("Ring color/material eksik. Color: " + colorType);
+            Debug.LogWarning("Ring: Material bulunamadı. ColorType: " + colorType);
             return;
         }
 
-        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+        if (currentRenderers == null || currentRenderers.Length == 0)
+        {
+            currentRenderers = GetComponentsInChildren<Renderer>(true);
+        }
 
-        for (int i = 0; i < renderers.Length; i++)
-            renderers[i].sharedMaterial = colorData.Material;
+        for (int i = 0; i < currentRenderers.Length; i++)
+        {
+            Renderer targetRenderer = currentRenderers[i];
+
+            if (targetRenderer == null)
+            {
+                continue;
+            }
+
+            targetRenderer.sharedMaterial = colorData.Material;
+        }
     }
 
-    private void ClearModel()
+    private void DestroyImmediateSafe(GameObject target)
     {
-        if (currentModel == null)
+        if (target == null)
+        {
             return;
+        }
 
-        Destroy(currentModel);
-        currentModel = null;
+        if (Application.isPlaying)
+        {
+            Destroy(target);
+        }
+        else
+        {
+            DestroyImmediate(target);
+        }
     }
 }

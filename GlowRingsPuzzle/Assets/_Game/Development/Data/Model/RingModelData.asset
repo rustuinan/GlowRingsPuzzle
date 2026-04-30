@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b6416f1f441baf4bac48450b0b9f167, type: 3}
   m_Name: RingModelData
   m_EditorClassIdentifier: 
-  outerModelPrefab: {fileID: 919132149155446097, guid: f49bd0c0e2108974398d9f8077ccaed1,
+  outerModelPrefab: {fileID: 919132149155446097, guid: 21c7a468198be53439a8110254e5a561,
     type: 3}
-  middleModelPrefab: {fileID: 919132149155446097, guid: 8869796f5a5a61847a013bda796aa896,
+  middleModelPrefab: {fileID: 919132149155446097, guid: 6a31bc5fde9ade14ca4ca98cd510629d,
     type: 3}
-  innerModelPrefab: {fileID: 919132149155446097, guid: 5ac788875f78e55419b2852587fffa18,
+  innerModelPrefab: {fileID: 919132149155446097, guid: 6b42f4f5a9893494b861bf366f76558a,
     type: 3}
