@@ -359,6 +359,11 @@ public class DragAndDrop : MonoBehaviour
 
                 targetCell.PlacePiece(pieceToPlace);
 
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayPlace();
+                }
+
                 if (FirstMoveTutorialManager.Instance != null)
                 {
                     FirstMoveTutorialManager.Instance.NotifyPiecePlaced(targetCell);

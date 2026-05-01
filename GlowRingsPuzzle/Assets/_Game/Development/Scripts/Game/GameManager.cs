@@ -261,6 +261,11 @@ public class GameManager : MonoBehaviour
         {
             comboCount++;
 
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayMatch();
+            }
+
             if (matchEffectManager != null)
             {
                 yield return matchEffectManager.PlayMatches(matches);
@@ -370,6 +375,11 @@ public class GameManager : MonoBehaviour
 
         currentTrashCount--;
         RefreshTrashUI();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayTrash();
+        }
 
         RingPiece pieceToTrash = pieceSpawner.CurrentPiece;
 
@@ -537,6 +547,11 @@ public class GameManager : MonoBehaviour
         {
             currentScore = ScoreManager.Instance.Score;
             currentHighScore = ScoreManager.Instance.HighScore;
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameOver();
         }
 
         if (gameOverPanelUI != null)
