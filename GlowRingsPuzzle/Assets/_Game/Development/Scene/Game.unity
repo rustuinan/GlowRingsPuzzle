@@ -3870,10 +3870,15 @@ MonoBehaviour:
   musicSource: {fileID: 93698219}
   sfxSource: {fileID: 480197290}
   backgroundMusicPlaylist:
-  - {fileID: 8300000, guid: f646d488337c94084b47e56752970960, type: 3}
+  - {fileID: 8300000, guid: 57ff8caa748240b42817dc1eb3ef4dd8, type: 3}
+  - {fileID: 8300000, guid: b43141a3ee311d641868b3c88dff7bf6, type: 3}
+  - {fileID: 8300000, guid: 2b3980c818cf79f4e82256e0d1af8e1a, type: 3}
+  - {fileID: 8300000, guid: a778da5fc746b4c41bdcf82da8f65628, type: 3}
+  - {fileID: 8300000, guid: 9d5687a6c62b50149bb1c2b086d7af17, type: 3}
+  - {fileID: 8300000, guid: 73992a05a69e7e7449cb0d53ea51d7a1, type: 3}
   playMusicOnStart: 1
   shufflePlaylist: 1
-  musicVolume: 0.406
+  musicVolume: 0.145
   musicFadeDuration: 0.45
   placeClips:
   - {fileID: 8300000, guid: 928389bfab1bd4589b4d82fb3fac68a1, type: 3}
@@ -5956,6 +5961,57 @@ MonoBehaviour:
   gizmoSize: 0.45
   gizmoColor: {r: 0, g: 1, b: 0.6, a: 0.35}
   ringParentGizmoColor: {r: 1, g: 0.6, b: 0, a: 1}
+--- !u!1 &2101076907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2101076909}
+  - component: {fileID: 2101076908}
+  m_Layer: 0
+  m_Name: AdaptiveQuality
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2101076908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101076907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d3a1b8afcb3da488e0b387927b6c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  performantIndex: 0
+  balancedIndex: 1
+  highFidelityIndex: 2
+  targetFps: 60
+  checkInterval: 3
+  downgradeFps: 45
+  upgradeFps: 58
+--- !u!4 &2101076909
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2101076907}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5969,3 +6025,4 @@ SceneRoots:
   - {fileID: 774787547}
   - {fileID: 1289888802}
   - {fileID: 1423124848}
+  - {fileID: 2101076909}
