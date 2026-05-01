@@ -323,7 +323,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -3725,6 +3725,12 @@ MonoBehaviour:
   fadeEase: 9
   scaleEase: 27
   moveEase: 9
+  hideDuration: 0.24
+  hideScale: 0.92
+  hideYOffset: -55
+  hideFadeEase: 8
+  hideScaleEase: 26
+  hideMoveEase: 8
 --- !u!225 &1225656434
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3867,17 +3873,21 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f646d488337c94084b47e56752970960, type: 3}
   playMusicOnStart: 1
   shufflePlaylist: 1
-  musicVolume: 0.55
+  musicVolume: 0.406
   musicFadeDuration: 0.45
-  placeClip: {fileID: 8300000, guid: 5aaa4c7d5781546c6a13a9f1eb97b15b, type: 3}
+  placeClips:
+  - {fileID: 8300000, guid: 928389bfab1bd4589b4d82fb3fac68a1, type: 3}
+  - {fileID: 8300000, guid: 27fdb3901aa5a4c73be687a0257e25fe, type: 3}
+  - {fileID: 8300000, guid: 714c6d1e1d36345f3a5fab47a1d4dbd5, type: 3}
+  - {fileID: 8300000, guid: 6404e6f82f85d4050b9d2d98d2f3392a, type: 3}
   matchClip: {fileID: 8300000, guid: 9d12098ed55364e7e80e277242e2c77e, type: 3}
   trashClip: {fileID: 8300000, guid: c6a04d2da9e71479b900f7381b720673, type: 3}
   gameOverClip: {fileID: 8300000, guid: 35e4f1431945c43fc9e5bf6e158e8d1c, type: 3}
   buttonClickClip: {fileID: 8300000, guid: 9cb19eb032d304b07acec596ae2ce4a4, type: 3}
-  placeVolume: 0.75
-  matchVolume: 0.9
-  trashVolume: 0.8
-  gameOverVolume: 0.95
+  placeVolume: 0.391
+  matchVolume: 0.214
+  trashVolume: 0.776
+  gameOverVolume: 0.766
   buttonVolume: 0.65
 --- !u!1 &1267693563
 GameObject:

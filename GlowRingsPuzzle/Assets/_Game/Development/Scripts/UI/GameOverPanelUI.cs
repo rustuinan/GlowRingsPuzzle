@@ -12,7 +12,7 @@ public class GameOverPanelUI : MonoBehaviour
     [SerializeField] private TMP_Text scoreValueText;
     [SerializeField] private Button restartButton;
 
-    [Header("Animation")]
+    [Header("Show Animation")]
     [SerializeField] private float showDuration = 0.32f;
     [SerializeField] private float startScale = 0.88f;
     [SerializeField] private float endScale = 1f;
@@ -21,8 +21,18 @@ public class GameOverPanelUI : MonoBehaviour
     [SerializeField] private Ease scaleEase = Ease.OutBack;
     [SerializeField] private Ease moveEase = Ease.OutCubic;
 
+    [Header("Hide Animation")]
+    [SerializeField] private float hideDuration = 0.24f;
+    [SerializeField] private float hideScale = 0.92f;
+    [SerializeField] private float hideYOffset = -55f;
+    [SerializeField] private Ease hideFadeEase = Ease.InCubic;
+    [SerializeField] private Ease hideScaleEase = Ease.InBack;
+    [SerializeField] private Ease hideMoveEase = Ease.InCubic;
+
     private Vector2 animatedRootDefaultAnchoredPosition;
+    private Sequence activeSequence;
     private bool initialized;
+    private bool isAnimatingHide;
 
     private void Awake()
     {
@@ -32,6 +42,8 @@ public class GameOverPanelUI : MonoBehaviour
 
     private void OnDestroy()
     {
+        KillActiveSequence();
+
         if (restartButton != null)
         {
             restartButton.onClick.RemoveListener(OnRestartButtonPressed);
@@ -72,7 +84,9 @@ public class GameOverPanelUI : MonoBehaviour
     public void Show(int score, int highScore)
     {
         Initialize();
+        KillActiveSequence();
 
+        isAnimatingHide = false;
         gameObject.SetActive(true);
 
         if (highScoreValueText != null)
@@ -85,9 +99,13 @@ public class GameOverPanelUI : MonoBehaviour
             scoreValueText.text = score.ToString();
         }
 
+        if (restartButton != null)
+        {
+            restartButton.interactable = false;
+        }
+
         if (rootCanvasGroup != null)
         {
-            rootCanvasGroup.DOKill();
             rootCanvasGroup.alpha = 0f;
             rootCanvasGroup.interactable = false;
             rootCanvasGroup.blocksRaycasts = false;
@@ -95,38 +113,118 @@ public class GameOverPanelUI : MonoBehaviour
 
         if (animatedRoot != null)
         {
-            animatedRoot.DOKill();
             animatedRoot.localScale = Vector3.one * startScale;
             animatedRoot.anchoredPosition = animatedRootDefaultAnchoredPosition + new Vector2(0f, startYOffset);
         }
 
-        Sequence sequence = DOTween.Sequence();
-        sequence.SetUpdate(true);
+        activeSequence = DOTween.Sequence();
+        activeSequence.SetUpdate(true);
 
         if (rootCanvasGroup != null)
         {
-            sequence.Join(
+            activeSequence.Join(
                 rootCanvasGroup.DOFade(1f, showDuration).SetEase(fadeEase)
             );
         }
 
         if (animatedRoot != null)
         {
-            sequence.Join(
+            activeSequence.Join(
                 animatedRoot.DOScale(endScale, showDuration).SetEase(scaleEase)
             );
 
-            sequence.Join(
+            activeSequence.Join(
                 animatedRoot.DOAnchorPos(animatedRootDefaultAnchoredPosition, showDuration).SetEase(moveEase)
             );
         }
 
-        sequence.OnComplete(() =>
+        activeSequence.OnComplete(() =>
         {
             if (rootCanvasGroup != null)
             {
                 rootCanvasGroup.interactable = true;
                 rootCanvasGroup.blocksRaycasts = true;
+            }
+
+            if (restartButton != null)
+            {
+                restartButton.interactable = true;
+            }
+
+            activeSequence = null;
+        });
+    }
+
+    public void HideAnimated(System.Action onComplete)
+    {
+        Initialize();
+
+        if (isAnimatingHide)
+        {
+            return;
+        }
+
+        isAnimatingHide = true;
+        KillActiveSequence();
+
+        if (restartButton != null)
+        {
+            restartButton.interactable = false;
+        }
+
+        if (rootCanvasGroup != null)
+        {
+            rootCanvasGroup.interactable = false;
+            rootCanvasGroup.blocksRaycasts = false;
+        }
+
+        activeSequence = DOTween.Sequence();
+        activeSequence.SetUpdate(true);
+
+        if (rootCanvasGroup != null)
+        {
+            activeSequence.Join(
+                rootCanvasGroup.DOFade(0f, hideDuration).SetEase(hideFadeEase)
+            );
+        }
+
+        if (animatedRoot != null)
+        {
+            activeSequence.Join(
+                animatedRoot.DOScale(hideScale, hideDuration).SetEase(hideScaleEase)
+            );
+
+            activeSequence.Join(
+                animatedRoot.DOAnchorPos(
+                    animatedRootDefaultAnchoredPosition + new Vector2(0f, hideYOffset),
+                    hideDuration
+                ).SetEase(hideMoveEase)
+            );
+        }
+
+        activeSequence.OnComplete(() =>
+        {
+            isAnimatingHide = false;
+
+            if (animatedRoot != null)
+            {
+                animatedRoot.localScale = Vector3.one;
+                animatedRoot.anchoredPosition = animatedRootDefaultAnchoredPosition;
+            }
+
+            if (rootCanvasGroup != null)
+            {
+                rootCanvasGroup.alpha = 0f;
+                rootCanvasGroup.interactable = false;
+                rootCanvasGroup.blocksRaycasts = false;
+            }
+
+            gameObject.SetActive(false);
+            activeSequence = null;
+
+            if (onComplete != null)
+            {
+                onComplete.Invoke();
             }
         });
     }
@@ -134,10 +232,12 @@ public class GameOverPanelUI : MonoBehaviour
     public void HideImmediate()
     {
         Initialize();
+        KillActiveSequence();
+
+        isAnimatingHide = false;
 
         if (rootCanvasGroup != null)
         {
-            rootCanvasGroup.DOKill();
             rootCanvasGroup.alpha = 0f;
             rootCanvasGroup.interactable = false;
             rootCanvasGroup.blocksRaycasts = false;
@@ -145,9 +245,13 @@ public class GameOverPanelUI : MonoBehaviour
 
         if (animatedRoot != null)
         {
-            animatedRoot.DOKill();
             animatedRoot.localScale = Vector3.one;
             animatedRoot.anchoredPosition = animatedRootDefaultAnchoredPosition;
+        }
+
+        if (restartButton != null)
+        {
+            restartButton.interactable = true;
         }
 
         gameObject.SetActive(false);
@@ -155,10 +259,41 @@ public class GameOverPanelUI : MonoBehaviour
 
     public void OnRestartButtonPressed()
     {
-        if (GameManager.Instance != null)
+        if (isAnimatingHide)
         {
-            HideImmediate();
-            GameManager.Instance.RestartGame();
+            return;
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayButtonClick();
+        }
+
+        HideAnimated(() =>
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.RestartGame();
+            }
+        });
+    }
+
+    private void KillActiveSequence()
+    {
+        if (activeSequence != null)
+        {
+            activeSequence.Kill();
+            activeSequence = null;
+        }
+
+        if (rootCanvasGroup != null)
+        {
+            rootCanvasGroup.DOKill();
+        }
+
+        if (animatedRoot != null)
+        {
+            animatedRoot.DOKill();
         }
     }
 }

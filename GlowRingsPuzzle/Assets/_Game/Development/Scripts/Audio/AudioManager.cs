@@ -23,7 +23,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private float musicFadeDuration = 0.35f;
 
     [Header("SFX Clips")]
-    [SerializeField] private AudioClip placeClip;
+    [SerializeField] private AudioClip[] placeClips;
     [SerializeField] private AudioClip matchClip;
     [SerializeField] private AudioClip trashClip;
     [SerializeField] private AudioClip gameOverClip;
@@ -47,6 +47,7 @@ public class AudioManager : MonoBehaviour
 
     private bool musicMuted;
     private bool soundMuted;
+    private bool musicPausedByMute;
     private int currentMusicIndex;
     private Coroutine musicRoutine;
     private Coroutine fadeRoutine;
@@ -89,10 +90,12 @@ public class AudioManager : MonoBehaviour
 
     private void Start()
     {
-        if (playMusicOnStart)
+        if (playMusicOnStart && !musicMuted)
         {
             StartMusicIfNeeded();
         }
+
+        NotifyCurrentStates();
     }
 
     private void FindOrCreateAudioSources()
@@ -139,7 +142,8 @@ public class AudioManager : MonoBehaviour
             musicSource.playOnAwake = false;
             musicSource.loop = false;
             musicSource.spatialBlend = 0f;
-            musicSource.volume = musicVolume;
+            musicSource.volume = musicMuted ? 0f : musicVolume;
+            musicSource.mute = false;
         }
 
         if (sfxSource != null)
@@ -148,6 +152,7 @@ public class AudioManager : MonoBehaviour
             sfxSource.loop = false;
             sfxSource.spatialBlend = 0f;
             sfxSource.volume = 1f;
+            sfxSource.mute = false;
         }
     }
 
@@ -170,12 +175,31 @@ public class AudioManager : MonoBehaviour
         {
             musicSource.mute = false;
             musicSource.volume = musicMuted ? 0f : musicVolume;
+
+            if (musicMuted && musicSource.isPlaying)
+            {
+                musicSource.Pause();
+                musicPausedByMute = true;
+            }
         }
 
         if (sfxSource != null)
         {
             sfxSource.mute = false;
             sfxSource.volume = 1f;
+        }
+    }
+
+    private void NotifyCurrentStates()
+    {
+        if (MusicMuteChanged != null)
+        {
+            MusicMuteChanged.Invoke(musicMuted);
+        }
+
+        if (SoundMuteChanged != null)
+        {
+            SoundMuteChanged.Invoke(soundMuted);
         }
     }
 
@@ -193,6 +217,7 @@ public class AudioManager : MonoBehaviour
     {
         if (musicMuted == muted)
         {
+            NotifyCurrentStates();
             return;
         }
 
@@ -207,11 +232,24 @@ public class AudioManager : MonoBehaviour
 
         if (musicMuted)
         {
+            if (musicSource != null && musicSource.isPlaying)
+            {
+                musicSource.Pause();
+                musicPausedByMute = true;
+            }
+
             FadeMusicTo(0f, musicFadeDuration);
         }
         else
         {
             StartMusicIfNeeded();
+
+            if (musicSource != null && musicPausedByMute)
+            {
+                musicSource.UnPause();
+                musicPausedByMute = false;
+            }
+
             FadeMusicTo(musicVolume, musicFadeDuration);
         }
 
@@ -225,6 +263,7 @@ public class AudioManager : MonoBehaviour
     {
         if (soundMuted == muted)
         {
+            NotifyCurrentStates();
             return;
         }
 
@@ -239,6 +278,11 @@ public class AudioManager : MonoBehaviour
 
     private void StartMusicIfNeeded()
     {
+        if (musicMuted)
+        {
+            return;
+        }
+
         if (backgroundMusicPlaylist == null || backgroundMusicPlaylist.Length == 0)
         {
             Debug.LogWarning("AudioManager: Background Music Playlist boş.");
@@ -251,26 +295,31 @@ public class AudioManager : MonoBehaviour
             ConfigureAudioSources();
         }
 
-        if (musicRoutine == null)
+        if (musicSource != null && musicSource.clip != null)
         {
-            musicRoutine = StartCoroutine(MusicPlaylistRoutine());
-            return;
-        }
-
-        if (musicSource != null && musicSource.clip != null && !musicSource.isPlaying)
-        {
-            musicSource.UnPause();
+            if (musicPausedByMute)
+            {
+                musicSource.UnPause();
+                musicPausedByMute = false;
+                return;
+            }
 
             if (!musicSource.isPlaying)
             {
                 musicSource.Play();
+                return;
             }
+        }
+
+        if (musicRoutine == null)
+        {
+            musicRoutine = StartCoroutine(MusicPlaylistRoutine());
         }
     }
 
     public void PlayPlace()
     {
-        PlaySFX(placeClip, placeVolume, false);
+        PlayRandomSFX(placeClips, placeVolume, false);
     }
 
     public void PlayMatch()
@@ -333,11 +382,49 @@ public class AudioManager : MonoBehaviour
         sfxSource.PlayOneShot(clip, volume);
     }
 
+    private void PlayRandomSFX(AudioClip[] clips, float volume, bool ignoreMute)
+    {
+        if (soundMuted && !ignoreMute)
+        {
+            return;
+        }
+
+        if (clips == null || clips.Length == 0)
+        {
+            Debug.LogWarning("AudioManager: Place Clips listesi boş.");
+            return;
+        }
+
+        AudioClip selectedClip = null;
+        int safety = 0;
+
+        while (selectedClip == null && safety < 12)
+        {
+            int randomIndex = Random.Range(0, clips.Length);
+            selectedClip = clips[randomIndex];
+            safety++;
+        }
+
+        if (selectedClip == null)
+        {
+            Debug.LogWarning("AudioManager: Place Clips içinde geçerli clip yok.");
+            return;
+        }
+
+        PlaySFX(selectedClip, volume, ignoreMute);
+    }
+
     private IEnumerator MusicPlaylistRoutine()
     {
         while (true)
         {
             if (backgroundMusicPlaylist == null || backgroundMusicPlaylist.Length == 0)
+            {
+                yield return null;
+                continue;
+            }
+
+            if (musicMuted)
             {
                 yield return null;
                 continue;
@@ -352,14 +439,10 @@ public class AudioManager : MonoBehaviour
             }
 
             musicSource.clip = nextClip;
-            musicSource.volume = musicMuted ? 0f : musicVolume;
+            musicSource.volume = musicVolume;
             musicSource.mute = false;
             musicSource.Play();
-
-            if (!musicMuted)
-            {
-                FadeMusicTo(musicVolume, musicFadeDuration);
-            }
+            musicPausedByMute = false;
 
             while (musicSource != null && musicSource.clip == nextClip)
             {
@@ -489,6 +572,7 @@ public class AudioManager : MonoBehaviour
     {
         musicMuted = false;
         soundMuted = false;
+        musicPausedByMute = false;
 
         PlayerPrefs.DeleteKey(MusicMutedKey);
         PlayerPrefs.DeleteKey(SoundMutedKey);
@@ -496,19 +580,11 @@ public class AudioManager : MonoBehaviour
 
         ApplyMuteStates();
 
-        if (MusicMuteChanged != null)
-        {
-            MusicMuteChanged.Invoke(musicMuted);
-        }
-
-        if (SoundMuteChanged != null)
-        {
-            SoundMuteChanged.Invoke(soundMuted);
-        }
-
         if (playMusicOnStart)
         {
             StartMusicIfNeeded();
         }
+
+        NotifyCurrentStates();
     }
 }
