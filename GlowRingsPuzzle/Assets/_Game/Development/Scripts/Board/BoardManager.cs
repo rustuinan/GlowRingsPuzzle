@@ -151,6 +151,78 @@ public class BoardManager : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Clears the smallest possible number of occupied layers from one cell so the blocked
+    /// piece can be placed. Used only after a rewarded extra life.
+    /// </summary>
+    public int CreateReviveSpace(RingPiece piece)
+    {
+        if (piece == null || cells == null || cells.Length == 0)
+        {
+            return 0;
+        }
+
+        Cell bestCell = null;
+        int fewestConflicts = int.MaxValue;
+
+        for (int i = 0; i < cells.Length; i++)
+        {
+            Cell cell = cells[i];
+
+            if (cell == null)
+            {
+                continue;
+            }
+
+            int conflicts = CountPieceConflicts(cell, piece);
+
+            if (conflicts < fewestConflicts)
+            {
+                bestCell = cell;
+                fewestConflicts = conflicts;
+            }
+        }
+
+        if (bestCell == null || fewestConflicts <= 0 || fewestConflicts == int.MaxValue)
+        {
+            return 0;
+        }
+
+        int clearedCount = 0;
+
+        for (int i = 0; i < piece.Rings.Count; i++)
+        {
+            Ring pieceRing = piece.Rings[i];
+
+            if (pieceRing == null || !bestCell.HasRing(pieceRing.Layer))
+            {
+                continue;
+            }
+
+            bestCell.ClearRing(pieceRing.Layer);
+            clearedCount++;
+        }
+
+        return clearedCount;
+    }
+
+    private static int CountPieceConflicts(Cell cell, RingPiece piece)
+    {
+        int conflicts = 0;
+
+        for (int i = 0; i < piece.Rings.Count; i++)
+        {
+            Ring pieceRing = piece.Rings[i];
+
+            if (pieceRing != null && cell.HasRing(pieceRing.Layer))
+            {
+                conflicts++;
+            }
+        }
+
+        return conflicts;
+    }
+
     public List<MatchData> FindMatches()
     {
         List<MatchData> matches = new List<MatchData>();

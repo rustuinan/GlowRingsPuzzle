@@ -52,6 +52,8 @@ public class GameManager : MonoBehaviour
     private bool isResolving;
     private bool isGameOver;
     private bool isTrashAnimating;
+    private bool hasUsedExtraLife;
+    private bool reviveRequestPending;
     private int comboCount;
     private int currentTrashCount;
 
@@ -78,6 +80,16 @@ public class GameManager : MonoBehaviour
     public int StartingTrashCount
     {
         get { return startingTrashCount; }
+    }
+
+    public bool CanOfferExtraLife
+    {
+        get { return isGameOver && !hasUsedExtraLife && !reviveRequestPending; }
+    }
+
+    public bool IsExtraLifeRequestPending
+    {
+        get { return reviveRequestPending; }
     }
 
     private void Awake()
@@ -148,6 +160,8 @@ public class GameManager : MonoBehaviour
         isResolving = false;
         isTrashAnimating = false;
         isGameOver = false;
+        hasUsedExtraLife = false;
+        reviveRequestPending = false;
         comboCount = 0;
 
         if (gameOverPanelUI != null)
@@ -182,6 +196,11 @@ public class GameManager : MonoBehaviour
         else
         {
             RefreshTrashUI();
+        }
+
+        if (AdMobManager.Instance != null)
+        {
+            AdMobManager.Instance.ShowInterstitialAfterLevelStart();
         }
     }
 
@@ -532,12 +551,6 @@ public class GameManager : MonoBehaviour
         isResolving = false;
         isTrashAnimating = false;
 
-        if (pieceSpawner != null)
-        {
-            pieceSpawner.ClearCurrentPiece();
-        }
-
-        ResetTrashCount();
         RefreshTrashUI();
 
         int currentScore = 0;
@@ -570,6 +583,82 @@ public class GameManager : MonoBehaviour
         }
 
         StartGame();
+    }
+
+    public bool TryContinueWithRewardedAd()
+    {
+        if (!CanOfferExtraLife || AdMobManager.Instance == null || !AdMobManager.Instance.IsRewardedReady)
+        {
+            return false;
+        }
+
+        reviveRequestPending = true;
+
+        bool started = AdMobManager.Instance.ShowRewardedExtraLife(
+            ContinueAfterRewardedAd,
+            CancelRewardedContinue);
+
+        if (!started)
+        {
+            reviveRequestPending = false;
+        }
+
+        return started;
+    }
+
+    private void ContinueAfterRewardedAd()
+    {
+        if (!isGameOver || hasUsedExtraLife)
+        {
+            reviveRequestPending = false;
+            return;
+        }
+
+        hasUsedExtraLife = true;
+        reviveRequestPending = false;
+
+        FindMissingReferences();
+
+        RingPiece blockedPiece = pieceSpawner != null ? pieceSpawner.CurrentPiece : null;
+        int clearedRingCount = boardManager != null
+            ? boardManager.CreateReviveSpace(blockedPiece)
+            : 0;
+
+        isGameOver = false;
+        isResolving = false;
+        isTrashAnimating = false;
+
+        if (pieceSpawner != null && pieceSpawner.CurrentPiece == null)
+        {
+            SpawnPieceFromSpawner();
+        }
+
+        System.Action finishContinue = () =>
+        {
+            RefreshTrashUI();
+            CheckGameOver();
+        };
+
+        if (gameOverPanelUI != null)
+        {
+            gameOverPanelUI.HideAnimated(finishContinue);
+        }
+        else
+        {
+            finishContinue.Invoke();
+        }
+
+        Debug.Log("Ekstra can kullanıldı. Açılan halka sayısı: " + clearedRingCount);
+    }
+
+    private void CancelRewardedContinue()
+    {
+        reviveRequestPending = false;
+
+        if (gameOverPanelUI != null)
+        {
+            gameOverPanelUI.RefreshExtraLifeButton();
+        }
     }
 
     private void SafeClearBoard()

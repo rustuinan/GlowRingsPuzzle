@@ -3718,6 +3718,9 @@ MonoBehaviour:
   highScoreValueText: {fileID: 604198463}
   scoreValueText: {fileID: 978538307}
   restartButton: {fileID: 65425712}
+  extraLifeButton: {fileID: 0}
+  extraLifeButtonLabel: {fileID: 0}
+  extraLifeIcon: {fileID: 21300000, guid: f6267c3993750420a9c67837202747cf, type: 3}
   showDuration: 0.32
   startScale: 0.88
   endScale: 1
