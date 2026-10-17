@@ -6000,6 +6000,8 @@ MonoBehaviour:
   checkInterval: 3
   downgradeFps: 45
   upgradeFps: 58
+  downgradeHoldDuration: 9
+  upgradeHoldDuration: 15
 --- !u!4 &2101076909
 Transform:
   m_ObjectHideFlags: 0

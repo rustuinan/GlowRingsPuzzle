@@ -20,14 +20,22 @@ public class MobileAdaptiveQuality : MonoBehaviour
     public float downgradeFps = 45f;
     public float upgradeFps = 58f;
 
+    [Header("Quality Stability")]
+    [Min(3f)] public float downgradeHoldDuration = 9f;
+    [Min(3f)] public float upgradeHoldDuration = 15f;
+
     private float timer;
     private int frames;
-    private float stableTimer;
+    private float lowFpsTimer;
+    private float highFpsTimer;
+    private UniversalAdditionalCameraData mainCameraData;
 
     private void Awake()
     {
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = targetFps;
+
+        CacheMainCameraData();
 
         int ram = SystemInfo.systemMemorySize;
         int vram = SystemInfo.graphicsMemorySize;
@@ -38,6 +46,11 @@ public class MobileAdaptiveQuality : MonoBehaviour
             SetQuality(balancedIndex);
         else
             SetQuality(highFidelityIndex);
+    }
+
+    private void Start()
+    {
+        ApplyCameraAntialiasing(QualitySettings.GetQualityLevel());
     }
 
     private void OnEnable()
@@ -69,26 +82,34 @@ public class MobileAdaptiveQuality : MonoBehaviour
 
         if (timer >= checkInterval)
         {
-            float fps = frames / timer;
+            float sampleDuration = timer;
+            float fps = frames / sampleDuration;
 
             if (fps < downgradeFps)
             {
-                stableTimer = 0f;
-                Downgrade();
+                highFpsTimer = 0f;
+                lowFpsTimer += sampleDuration;
+
+                if (lowFpsTimer >= downgradeHoldDuration)
+                {
+                    Downgrade();
+                    lowFpsTimer = 0f;
+                }
             }
             else if (fps > upgradeFps)
             {
-                stableTimer += checkInterval;
+                lowFpsTimer = 0f;
+                highFpsTimer += sampleDuration;
 
-                if (stableTimer >= 15f)
+                if (highFpsTimer >= upgradeHoldDuration)
                 {
                     Upgrade();
-                    stableTimer = 0f;
+                    highFpsTimer = 0f;
                 }
             }
             else
             {
-                stableTimer = 0f;
+                ResetStabilityTimers();
             }
 
             frames = 0;
@@ -103,6 +124,7 @@ public class MobileAdaptiveQuality : MonoBehaviour
             metrics.WarningLevel == WarningLevel.Throttling)
         {
             Application.targetFrameRate = 30;
+            ResetStabilityTimers();
             Downgrade();
         }
     }
@@ -112,7 +134,7 @@ public class MobileAdaptiveQuality : MonoBehaviour
         if (args.PerformanceBottleneck == PerformanceBottleneck.CPU ||
             args.PerformanceBottleneck == PerformanceBottleneck.GPU)
         {
-            Downgrade();
+            lowFpsTimer = Mathf.Max(lowFpsTimer, downgradeHoldDuration - checkInterval);
         }
     }
 #endif
@@ -121,6 +143,7 @@ public class MobileAdaptiveQuality : MonoBehaviour
     {
         index = Mathf.Clamp(index, 0, QualitySettings.names.Length - 1);
         QualitySettings.SetQualityLevel(index, true);
+        ApplyCameraAntialiasing(index);
     }
 
     private void Downgrade()
@@ -137,5 +160,38 @@ public class MobileAdaptiveQuality : MonoBehaviour
 
         if (current < highFidelityIndex)
             SetQuality(current + 1);
+    }
+
+    private void CacheMainCameraData()
+    {
+        Camera mainCamera = Camera.main;
+
+        if (mainCamera != null)
+        {
+            mainCameraData = mainCamera.GetComponent<UniversalAdditionalCameraData>();
+        }
+    }
+
+    private void ApplyCameraAntialiasing(int qualityIndex)
+    {
+        if (mainCameraData == null)
+        {
+            CacheMainCameraData();
+        }
+
+        if (mainCameraData == null)
+        {
+            return;
+        }
+
+        mainCameraData.antialiasing = qualityIndex == performantIndex
+            ? AntialiasingMode.FastApproximateAntialiasing
+            : AntialiasingMode.None;
+    }
+
+    private void ResetStabilityTimers()
+    {
+        lowFpsTimer = 0f;
+        highFpsTimer = 0f;
     }
 }
