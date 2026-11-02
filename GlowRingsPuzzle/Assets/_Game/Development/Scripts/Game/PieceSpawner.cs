@@ -29,10 +29,10 @@ public class PieceSpawner : MonoBehaviour
     [SerializeField] private bool enableAllClearAssist = true;
 
     [Range(0f, 1f)]
-    [SerializeField] private float allClearAssistChance = 0.38f;
+    [SerializeField] private float allClearAssistChance = 0.10f;
 
     [SerializeField] private int allClearMaxRingCount = 6;
-    [SerializeField] private int allClearCooldownSpawnCount = 5;
+    [SerializeField] private int allClearCooldownSpawnCount = 10;
 
     [Header("Fallback Weights")]
     [SerializeField] private int singleLayerWeight = 78;
@@ -46,6 +46,35 @@ public class PieceSpawner : MonoBehaviour
 
     private RingPiece currentPiece;
     private int allClearAssistCooldown;
+    private int assistCooldown;
+    private int movesWithoutMatch;
+    private RingPieceData nextPieceData;
+    private RingColorType nextPieceColor;
+    private SpawnType nextPieceType;
+
+    public RingPieceData NextPieceData => nextPieceData;
+    public RingColorType NextPieceColor => nextPieceColor;
+    public RingPiece PiecePrefab => piecePrefab;
+    public Vector3 SpawnPosition => spawnPoint != null ? spawnPoint.position : transform.position;
+    public Transform SpawnVisual => spawnPoint != null ? spawnPoint.Find("Visual") : null;
+
+    [Header("Match Rhythm")]
+    [Min(0)] [SerializeField] private int assistSpacing = 2;
+    [Min(1)] [SerializeField] private int droughtStartMoves = 4;
+    [Range(0f, 1f)] [SerializeField] private float setupChance = 0.24f;
+
+    public void ResetBalance()
+    {
+        allClearAssistCooldown = 0;
+        assistCooldown = 0;
+        movesWithoutMatch = 0;
+        nextPieceData = null;
+    }
+
+    public void ReportMoveResult(bool matched)
+    {
+        movesWithoutMatch = matched ? 0 : Mathf.Min(movesWithoutMatch + 1, 20);
+    }
 
     public RingPiece CurrentPiece
     {
@@ -76,7 +105,19 @@ public class PieceSpawner : MonoBehaviour
             return;
         }
 
-        RingPieceData selectedData = SelectPieceData(out RingColorType selectedColor);
+        RingPieceData selectedData;
+        RingColorType selectedColor;
+        if (nextPieceData != null)
+        {
+            selectedData = nextPieceData;
+            selectedColor = nextPieceColor;
+            lastSpawnType = nextPieceType;
+            nextPieceData = null;
+        }
+        else
+        {
+            selectedData = SelectPieceData(out selectedColor);
+        }
 
         if (selectedData == null)
         {
@@ -99,11 +140,22 @@ public class PieceSpawner : MonoBehaviour
 
         lastSpawnData = selectedData;
         lastSpawnColor = selectedColor;
+        QueueNextPiece();
+    }
+
+    private void QueueNextPiece()
+    {
+        // Generate once: the player can trust the visible preview, even after a bomb or discard.
+        SpawnType currentType = lastSpawnType;
+        nextPieceData = SelectPieceData(out nextPieceColor);
+        nextPieceType = lastSpawnType;
+        lastSpawnType = currentType;
     }
 
     public RingPiece SpawnForcedPiece(RingPieceData pieceData, RingColorType colorType)
     {
         ClearCurrentPiece();
+        nextPieceData = null;
 
         if (pieceData == null)
         {
@@ -183,10 +235,13 @@ public class PieceSpawner : MonoBehaviour
 
     private RingPieceData SelectPieceData(out RingColorType selectedColor)
     {
+        return SelectPieceForBoard(FindObjectOfType<BoardManager>(), out selectedColor);
+    }
+
+    private RingPieceData SelectPieceForBoard(BoardManager boardManager, out RingColorType selectedColor)
+    {
         selectedColor = GetRandomThemeColor();
         lastSpawnType = SpawnType.Random;
-
-        BoardManager boardManager = FindObjectOfType<BoardManager>();
 
         if (boardManager == null)
         {
@@ -196,13 +251,20 @@ public class PieceSpawner : MonoBehaviour
         float fillRatio = GetBoardFillRatio(boardManager);
         int totalRingCount = GetTotalRingCount(boardManager);
 
+        bool canAssistAllClear = allClearAssistCooldown <= 0;
         if (allClearAssistCooldown > 0)
         {
             allClearAssistCooldown--;
         }
 
-        if (enableAllClearAssist &&
-            allClearAssistCooldown <= 0 &&
+        bool canAssist = assistCooldown <= 0;
+        if (assistCooldown > 0)
+        {
+            assistCooldown--;
+        }
+
+        if (canAssist && enableAllClearAssist &&
+            canAssistAllClear &&
             totalRingCount > 0 &&
             totalRingCount <= allClearMaxRingCount &&
             Random.value <= GetDynamicAllClearChance(totalRingCount))
@@ -212,20 +274,31 @@ public class PieceSpawner : MonoBehaviour
                 selectedColor = allClearColor;
                 lastSpawnType = SpawnType.AllClearAssist;
                 allClearAssistCooldown = Mathf.Max(0, allClearCooldownSpawnCount);
+                assistCooldown = Mathf.Max(0, assistSpacing);
                 return allClearData;
             }
         }
 
         float dynamicHelpfulChance = GetDynamicHelpfulChance(fillRatio);
 
-        if (tryHelpfulSpawn && Random.value <= dynamicHelpfulChance)
+        if (canAssist && tryHelpfulSpawn && Random.value < dynamicHelpfulChance)
         {
-            if (TryGetHelpfulPiece(boardManager, out RingPieceData helpfulData, out RingColorType helpfulColor))
+            if (TryGetEvaluatedPiece(boardManager, false, out RingPieceData helpfulData, out RingColorType helpfulColor))
             {
                 selectedColor = helpfulColor;
                 lastSpawnType = SpawnType.Helpful;
+                assistCooldown = Mathf.Max(0, assistSpacing);
                 return helpfulData;
             }
+        }
+
+        if (canAssist && tryHelpfulSpawn && Random.value < setupChance &&
+            TryGetEvaluatedPiece(boardManager, true, out RingPieceData setupData, out RingColorType setupColor))
+        {
+            selectedColor = setupColor;
+            lastSpawnType = SpawnType.SetupCombo;
+            assistCooldown = Mathf.Max(0, assistSpacing);
+            return setupData;
         }
 
         RingPieceData weightedData = GetBoardAwareRandomPieceData(fillRatio);
@@ -244,34 +317,17 @@ public class PieceSpawner : MonoBehaviour
 
     private float GetDynamicHelpfulChance(float fillRatio)
     {
-        if (fillRatio < 0.30f)
-        {
-            return 0.14f;
-        }
-
-        if (fillRatio < 0.55f)
-        {
-            return helpfulChance;
-        }
-
-        if (fillRatio < 0.75f)
-        {
-            return 0.38f;
-        }
-
-        if (fillRatio < 0.88f)
-        {
-            return 0.50f;
-        }
-
-        return 0.62f;
+        float pressure = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.25f, 0.85f, fillRatio));
+        float drought = Mathf.Clamp01((movesWithoutMatch - droughtStartMoves + 1) / 4f);
+        return Mathf.Clamp(Mathf.Lerp(helpfulChance * 0.65f, helpfulChance + 0.06f, pressure)
+            + drought * 0.18f, 0f, 0.50f);
     }
 
     private float GetDynamicAllClearChance(int totalRingCount)
     {
         if (totalRingCount <= 3)
         {
-            return Mathf.Clamp01(allClearAssistChance + 0.14f);
+            return Mathf.Clamp01(allClearAssistChance);
         }
 
         if (totalRingCount <= allClearMaxRingCount)
@@ -294,29 +350,12 @@ public class PieceSpawner : MonoBehaviour
             doubleWeight = doubleLayerWeight;
             tripleWeight = tripleLayerWeight;
         }
-        else if (boardFillRatio < 0.35f)
-        {
-            singleWeight = 62;
-            doubleWeight = 34;
-            tripleWeight = 4;
-        }
-        else if (boardFillRatio < 0.70f)
-        {
-            singleWeight = 76;
-            doubleWeight = 22;
-            tripleWeight = 2;
-        }
-        else if (boardFillRatio < 0.82f)
-        {
-            singleWeight = 88;
-            doubleWeight = 12;
-            tripleWeight = 0;
-        }
         else
         {
-            singleWeight = 95;
-            doubleWeight = 5;
-            tripleWeight = 0;
+            float pressure = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(boardFillRatio));
+            singleWeight = Mathf.RoundToInt(Mathf.Lerp(62f, 78f, pressure));
+            doubleWeight = Mathf.RoundToInt(Mathf.Lerp(34f, 20f, pressure));
+            tripleWeight = 100 - singleWeight - doubleWeight;
         }
 
         int layerCount = RollLayerCount(singleWeight, doubleWeight, tripleWeight);
@@ -372,7 +411,7 @@ public class PieceSpawner : MonoBehaviour
         data = null;
         color = GetRandomThemeColor();
 
-        if (boardManager == null || boardManager.Cells == null)
+        if (boardManager == null || boardManager.Cells == null || boardManager.Cells.Length != 9)
         {
             return false;
         }
@@ -649,89 +688,67 @@ public class PieceSpawner : MonoBehaviour
         return true;
     }
 
-    private bool TryGetHelpfulPiece(BoardManager boardManager, out RingPieceData data, out RingColorType color)
+    private bool TryGetEvaluatedPiece(BoardManager boardManager, bool setupOnly, out RingPieceData data, out RingColorType color)
     {
         data = null;
-        color = GetRandomThemeColor();
-
-        if (boardManager == null)
-        {
+        color = lastSpawnColor;
+        if (boardManager.Cells == null || boardManager.Cells.Length != 9 ||
+            ThemeManager.Instance == null || ThemeManager.Instance.CurrentTheme == null)
             return false;
-        }
 
-        if (TryFindCellMatchOpportunity(boardManager, out RingLayer cellLayer, out color))
+        int[,] board = new int[9, 3];
+        int occupied = 0;
+        for (int cell = 0; cell < 9; cell++)
         {
-            data = GetPieceBySingleLayer(cellLayer);
-            return data != null;
-        }
-
-        if (boardManager.TryFindSingleMatchOpportunity(out RingLayer layer, out color))
-        {
-            data = GetPieceBySingleLayer(layer);
-            return data != null;
-        }
-
-        if (boardManager.TryFindComboOpportunity(out RingLayer firstLayer, out RingLayer secondLayer, out color))
-        {
-            bool hasOuter = firstLayer == RingLayer.Outer || secondLayer == RingLayer.Outer;
-            bool hasMiddle = firstLayer == RingLayer.Middle || secondLayer == RingLayer.Middle;
-            bool hasInner = firstLayer == RingLayer.Inner || secondLayer == RingLayer.Inner;
-
-            data = GetPieceByLayers(hasOuter, hasMiddle, hasInner);
-            return data != null;
-        }
-
-        return false;
-    }
-
-    private bool TryFindCellMatchOpportunity(BoardManager boardManager, out RingLayer neededLayer, out RingColorType color)
-    {
-        neededLayer = RingLayer.Outer;
-        color = GetRandomThemeColor();
-
-        if (boardManager == null || boardManager.Cells == null)
-        {
-            return false;
-        }
-
-        Cell[] cells = boardManager.Cells;
-
-        for (int i = 0; i < cells.Length; i++)
-        {
-            Cell cell = cells[i];
-
-            if (cell == null)
+            for (int layer = 0; layer < 3; layer++)
             {
-                continue;
-            }
-
-            Ring outer = cell.GetRing(RingLayer.Outer);
-            Ring middle = cell.GetRing(RingLayer.Middle);
-            Ring inner = cell.GetRing(RingLayer.Inner);
-
-            if (outer != null && middle != null && inner == null && outer.ColorType == middle.ColorType)
-            {
-                neededLayer = RingLayer.Inner;
-                color = outer.ColorType;
-                return true;
-            }
-
-            if (outer != null && inner != null && middle == null && outer.ColorType == inner.ColorType)
-            {
-                neededLayer = RingLayer.Middle;
-                color = outer.ColorType;
-                return true;
-            }
-
-            if (middle != null && inner != null && outer == null && middle.ColorType == inner.ColorType)
-            {
-                neededLayer = RingLayer.Outer;
-                color = middle.ColorType;
-                return true;
+                Cell source = boardManager.Cells[cell];
+                Ring ring = source != null ? source.GetRing((RingLayer)layer) : null;
+                board[cell, layer] = source == null ? -2 : ring != null ? (int)ring.ColorType : -1;
+                if (ring != null) occupied++;
             }
         }
 
-        return false;
+        // Weighted reservoir sampling keeps all shapes/colors in contention, rather
+        // than always choosing the first cell, first free layer or first enum color.
+        float totalWeight = 0f;
+        HashSet<RingColorType> colors = new HashSet<RingColorType>();
+        foreach (RingColorData colorData in ThemeManager.Instance.CurrentTheme.RingColors)
+        {
+            if (colorData == null || !colors.Add(colorData.ColorType)) continue;
+            foreach (RingPieceData candidate in pieceDataList)
+            {
+                if (candidate == null || !candidate.HasAnyLayer) continue;
+                int mask = (candidate.HasOuter ? 1 : 0) | (candidate.HasMiddle ? 2 : 0) | (candidate.HasInner ? 4 : 0);
+                float bestWeight = 0f;
+                int usefulPlacements = 0;
+                for (int cell = 0; cell < 9; cell++)
+                {
+                    if (!SpawnBoardEvaluation.CanPlace(board, cell, mask)) continue;
+                    SpawnBoardEvaluation.Evaluate(board, cell, mask, (int)colorData.ColorType,
+                        out int matches, out int cleared, out int setups);
+                    // Reserve deliberately supplied all-clears for their own chance/cooldown.
+                    bool allClear = cleared == occupied + candidate.GetLayerCount();
+                    if (allClear) continue;
+                    if (matches > 0 && cleared <= candidate.GetLayerCount()) continue;
+                    float weight = setupOnly
+                        ? (matches == 0 && setups > 0 ? 1f + Mathf.Min(setups, 3) * 0.3f : 0f)
+                        : (matches > 0 ? 1f + Mathf.Min(matches - 1, 2) * 0.6f : 0f);
+                    if (weight > 0f) usefulPlacements++;
+                    bestWeight = Mathf.Max(bestWeight, weight);
+                }
+                if (bestWeight <= 0f) continue;
+                // Favor pieces that offer a choice of productive destinations.
+                bestWeight *= 1f + Mathf.Min(usefulPlacements - 1, 3) * 0.4f;
+                totalWeight += bestWeight;
+                if (Random.value * totalWeight < bestWeight)
+                {
+                    data = candidate;
+                    color = colorData.ColorType;
+                }
+            }
+        }
+        return data != null;
     }
 
     private bool CellHasColor(Cell cell, RingColorType color)

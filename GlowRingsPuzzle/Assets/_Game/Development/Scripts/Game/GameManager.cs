@@ -5,6 +5,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -46,6 +47,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int multiMatchBonus = 120;
     [SerializeField] private int allClearBonus = 750;
 
+    [Header("Cell Bomb")]
+    [Min(0)] [SerializeField] private int startingBombCount = 2;
+    private int currentBombCount;
+    private bool bombTargeting;
+    private DragAndDrop dragAndDrop;
+    public int CurrentBombCount => currentBombCount;
+    public bool IsBombTargeting => bombTargeting;
+    public bool HasBlockedPiece { get; private set; }
+    public bool IsBoosterOfferOpen { get; private set; }
+    private bool boosterRescueSelected;
+    public BoardManager Board => boardManager;
+    public bool IsTutorialActive => IsTutorialBlockingInput();
+    public bool IsPieceInteracting => dragAndDrop != null && dragAndDrop.IsInteracting;
+    public bool CanUseBomb => !isGameOver && !IsResolving && !IsBoosterOfferOpen && !IsTutorialBlockingInput() &&
+        !IsPieceInteracting && currentBombCount > 0 && boardManager != null && !boardManager.IsBoardEmpty();
+    public int ComboPreparationMovesRemaining => comboChain.PreparationMovesRemaining;
+
     [Header("Game State")]
     [SerializeField] private bool startGameOnStart = true;
 
@@ -54,7 +72,7 @@ public class GameManager : MonoBehaviour
     private bool isTrashAnimating;
     private bool hasUsedExtraLife;
     private bool reviveRequestPending;
-    private int comboCount;
+    private readonly ComboChain comboChain = new ComboChain();
     private int currentTrashCount;
 
     public bool IsResolving
@@ -69,7 +87,7 @@ public class GameManager : MonoBehaviour
 
     public int ComboCount
     {
-        get { return comboCount; }
+        get { return comboChain.Multiplier; }
     }
 
     public int CurrentTrashCount
@@ -120,8 +138,52 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
+    private void LateUpdate()
+    {
+        RefreshTrashUI();
+        if (!bombTargeting) return;
+        if (IsTutorialBlockingInput() || isGameOver || IsResolving)
+        {
+            CancelBombTargeting();
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.Escape)) { CancelBombTargeting(); return; }
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (EventSystem.current != null &&
+            (EventSystem.current.IsPointerOverGameObject() ||
+            (Input.touchCount > 0 && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)))) return;
+        Camera cam = Camera.main;
+        if (cam == null) return;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Plane plane = new Plane(boardManager.transform.up, boardManager.transform.position);
+        if (!plane.Raycast(ray, out float distance)) { CancelBombTargeting(); return; }
+        Vector3 point = ray.GetPoint(distance);
+        Cell closest = null;
+        float closestDistance = float.MaxValue;
+        float spacing = 1f;
+        Cell[] cells = boardManager.Cells;
+        if (cells.Length > 1 && cells[0] != null && cells[1] != null)
+            spacing = Vector3.Distance(cells[0].transform.position, cells[1].transform.position);
+        foreach (Cell cell in cells)
+        {
+            if (cell == null) continue;
+            float candidateDistance = Vector3.ProjectOnPlane(point - cell.transform.position, plane.normal).magnitude;
+            if (candidateDistance >= closestDistance) continue;
+            closestDistance = candidateDistance;
+            closest = cell;
+        }
+        if (closest == null || closestDistance > spacing * 0.65f) { CancelBombTargeting(); return; }
+        TryBombCell(closest);
+    }
+
+    private void OnApplicationFocus(bool focused)
+    {
+        if (!focused && bombTargeting) CancelBombTargeting();
+    }
+
     private void FindMissingReferences()
     {
+        if (dragAndDrop == null) dragAndDrop = FindObjectOfType<DragAndDrop>();
         if (boardManager == null)
         {
             boardManager = FindObjectOfType<BoardManager>();
@@ -162,7 +224,12 @@ public class GameManager : MonoBehaviour
         isGameOver = false;
         hasUsedExtraLife = false;
         reviveRequestPending = false;
-        comboCount = 0;
+        comboChain.Reset();
+        currentBombCount = Mathf.Max(0, startingBombCount);
+        bombTargeting = false;
+        HasBlockedPiece = false;
+        IsBoosterOfferOpen = false;
+        boosterRescueSelected = false;
 
         if (gameOverPanelUI != null)
         {
@@ -186,6 +253,7 @@ public class GameManager : MonoBehaviour
         if (pieceSpawner != null)
         {
             pieceSpawner.ClearCurrentPiece();
+            pieceSpawner.ResetBalance();
         }
 
         if (!IsTutorialBlockingInput())
@@ -275,11 +343,15 @@ public class GameManager : MonoBehaviour
         RefreshTrashUI();
 
         List<MatchData> matches = boardManager.FindMatches();
+        comboChain.RegisterMove(matches != null && matches.Count > 0);
+
+        if (pieceSpawner != null)
+        {
+            pieceSpawner.ReportMoveResult(matches != null && matches.Count > 0);
+        }
 
         if (matches != null && matches.Count > 0)
         {
-            comboCount++;
-
             if (AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlayMatch();
@@ -293,7 +365,7 @@ public class GameManager : MonoBehaviour
             int clearedRingCount = boardManager.ClearMatches(matches);
 
             int baseScore = clearedRingCount * pointsPerClearedRing;
-            int comboScore = baseScore * comboCount;
+            int comboScore = baseScore * ComboCount;
             int totalScore = comboScore;
 
             if (matches.Count >= 2)
@@ -316,7 +388,7 @@ public class GameManager : MonoBehaviour
             if (gameplayFeedbackManager != null)
             {
                 gameplayFeedbackManager.PlayMatchFeedback(
-                    comboCount,
+                    ComboCount,
                     matches.Count,
                     clearedRingCount,
                     isAllClear,
@@ -324,11 +396,6 @@ public class GameManager : MonoBehaviour
                 );
             }
         }
-        else
-        {
-            comboCount = 0;
-        }
-
         if (ThemeManager.Instance != null && ScoreManager.Instance != null)
         {
             ThemeManager.Instance.UpdateThemeByScore(ScoreManager.Instance.Score);
@@ -350,6 +417,8 @@ public class GameManager : MonoBehaviour
 
     public void TrashCurrentPiece()
     {
+        if (IsBoosterOfferOpen) return;
+        if (bombTargeting || IsPieceInteracting) return;
         if (IsTutorialBlockingInput())
         {
             RefreshTrashUI();
@@ -457,7 +526,7 @@ public class GameManager : MonoBehaviour
             SpawnPieceFromSpawner();
         }
 
-        comboCount = 0;
+        comboChain.Reset();
 
         isTrashAnimating = false;
         RefreshTrashUI();
@@ -504,6 +573,9 @@ public class GameManager : MonoBehaviour
                 !tutorialBlockingInput &&
                 !isGameOver &&
                 !IsResolving &&
+                !IsBoosterOfferOpen &&
+                !bombTargeting &&
+                !IsPieceInteracting &&
                 currentTrashCount > 0;
         }
     }
@@ -534,19 +606,31 @@ public class GameManager : MonoBehaviour
         }
 
         bool hasMove = boardManager.HasMove(currentPiece);
+        HasBlockedPiece = !hasMove;
 
-        if (!hasMove)
+        bool hasBombRescue = currentBombCount > 0 && !boardManager.IsBoardEmpty();
+        if (hasMove)
+        {
+            IsBoosterOfferOpen = false;
+            boosterRescueSelected = false;
+            RefreshTrashUI();
+        }
+        else if (currentTrashCount <= 0 && !hasBombRescue)
         {
             GameOver();
         }
-        else
+        else if (!boosterRescueSelected)
         {
+            IsBoosterOfferOpen = true;
             RefreshTrashUI();
         }
     }
 
     private void GameOver()
     {
+        IsBoosterOfferOpen = false;
+        boosterRescueSelected = false;
+        bombTargeting = false;
         isGameOver = true;
         isResolving = false;
         isTrashAnimating = false;
@@ -573,6 +657,86 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log("Game Over");
+    }
+
+    public void ToggleBombTargeting()
+    {
+        if (bombTargeting) { CancelBombTargeting(); return; }
+        if (!CanUseBomb) return;
+        bombTargeting = true;
+        RefreshTrashUI();
+    }
+
+    public void CancelBombTargeting()
+    {
+        bombTargeting = false;
+        if (boosterRescueSelected && HasBlockedPiece)
+        {
+            boosterRescueSelected = false;
+            CheckGameOver();
+        }
+        RefreshTrashUI();
+    }
+
+    public void AcceptBombRescue()
+    {
+        if (!IsBoosterOfferOpen || currentBombCount <= 0 || IsResolving || isGameOver) return;
+        IsBoosterOfferOpen = false;
+        boosterRescueSelected = true;
+        ToggleBombTargeting();
+        if (!bombTargeting)
+        {
+            boosterRescueSelected = false;
+            CheckGameOver();
+        }
+    }
+
+    public void AcceptDiscardRescue()
+    {
+        if (!IsBoosterOfferOpen || currentTrashCount <= 0 || IsResolving || isGameOver) return;
+        IsBoosterOfferOpen = false;
+        // A replacement can also be blocked, so check it and offer a fresh choice afterwards.
+        boosterRescueSelected = false;
+        TrashCurrentPiece();
+    }
+
+    public void DeclineBoosterRescue()
+    {
+        if (!IsBoosterOfferOpen) return;
+        GameOver();
+    }
+
+    public bool TryBombCell(Cell cell)
+    {
+        if (!bombTargeting || !CanUseBomb || cell == null ||
+            System.Array.IndexOf(boardManager.Cells, cell) < 0 || cell.GetAllRings().Length == 0)
+            return false;
+
+        bombTargeting = false;
+        currentBombCount--;
+        comboChain.Reset();
+        StartCoroutine(BombCellRoutine(cell));
+        return true;
+    }
+
+    private IEnumerator BombCellRoutine(Cell cell)
+    {
+        isResolving = true;
+        RefreshTrashUI();
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayTrash();
+        foreach (Ring ring in cell.GetAllRings())
+        {
+            if (ring == null) continue;
+            ring.transform.DOKill();
+            ring.transform.DOScale(Vector3.zero, 0.22f).SetEase(Ease.InBack);
+        }
+        yield return new WaitForSeconds(0.24f);
+        if (cell != null) cell.ClearAllRings();
+        // A booster grants space, never match points, an all-clear bonus or a new piece.
+        isResolving = false;
+        boosterRescueSelected = false;
+        RefreshTrashUI();
+        CheckGameOver();
     }
 
     public void RestartGame()

@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class DragAndDrop : MonoBehaviour
 {
@@ -51,6 +52,7 @@ public class DragAndDrop : MonoBehaviour
 
     private bool isDragging;
     private bool isDropAnimating;
+    public bool IsInteracting => isDragging || isDropAnimating;
 
     private float currentLiftHeight;
     private float currentScaleMultiplier = 1f;
@@ -117,7 +119,7 @@ public class DragAndDrop : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            if (GameManager.Instance.IsGameOver || GameManager.Instance.IsResolving)
+            if (GameManager.Instance.IsGameOver || GameManager.Instance.IsResolving || GameManager.Instance.IsBombTargeting || GameManager.Instance.IsBoosterOfferOpen)
             {
                 return;
             }
@@ -142,6 +144,10 @@ public class DragAndDrop : MonoBehaviour
         {
             return;
         }
+
+        if (EventSystem.current != null &&
+            (EventSystem.current.IsPointerOverGameObject() ||
+             (Input.touchCount > 0 && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)))) return;
 
         selectedPiece = piece;
         selectedTransform = selectedPiece.transform;

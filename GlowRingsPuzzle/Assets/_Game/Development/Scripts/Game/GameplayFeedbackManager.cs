@@ -111,7 +111,7 @@ public class GameplayFeedbackManager : MonoBehaviour
             );
         }
 
-        PunchCamera(normalCameraPunch);
+        PunchCamera(normalCameraPunch * Mathf.Min(1f + (matchCount - 1) * 0.3f, 1.8f));
     }
 
     private void PlayAllClearFeedback(int comboCount, int gainedScore)
@@ -166,6 +166,8 @@ public class GameplayFeedbackManager : MonoBehaviour
 
     private string GetPraiseText(int comboCount, int matchCount, int clearedRingCount)
     {
+        if (matchCount >= 3) return matchCount + " MATCHES!";
+        if (matchCount == 2) return "DOUBLE MATCH!";
         if (comboCount >= 5)
         {
             return "LEGENDARY!";
