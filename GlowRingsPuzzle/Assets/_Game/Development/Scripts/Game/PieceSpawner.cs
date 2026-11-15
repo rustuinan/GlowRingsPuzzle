@@ -188,6 +188,18 @@ public class PieceSpawner : MonoBehaviour
         return currentPiece;
     }
 
+    internal bool SpawnPuzzlePiece(int layers, RingColorType color, int nextLayers = 0, RingColorType nextColor = default)
+    {
+        var data = FindPuzzleShape(layers);
+        if (SpawnForcedPiece(data, color) == null) return false;
+        nextPieceData = nextLayers == 0 ? null : FindPuzzleShape(nextLayers);
+        nextPieceColor = nextColor;
+        return true;
+    }
+
+    private RingPieceData FindPuzzleShape(int layers) => pieceDataList.Find(data => data != null &&
+        ((data.HasOuter ? 1 : 0) | (data.HasMiddle ? 2 : 0) | (data.HasInner ? 4 : 0)) == layers);
+
     public void ClearCurrentPiece()
     {
         if (currentPiece == null)

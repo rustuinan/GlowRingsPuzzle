@@ -14,6 +14,9 @@ public class RingPiece : MonoBehaviour
     private Vector3 startPosition;
     private bool placed;
 
+    internal Ring GetRingTemplate(RingLayer layer) =>
+        layer == RingLayer.Outer ? outerRing : layer == RingLayer.Middle ? middleRing : innerRing;
+
     public IReadOnlyList<Ring> Rings
     {
         get { return activeRings; }

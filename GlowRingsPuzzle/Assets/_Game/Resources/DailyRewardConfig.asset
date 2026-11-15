@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aa45db2e7eadf743ae519ecd061b2a5, type: 3}
+  m_Name: DailyRewardConfig
+  m_EditorClassIdentifier: 
+  FirstDayCoins: 100
+  ExtraCoinsPerDay: 50
+  CoinIcon: {fileID: 21300000, guid: 407afb697ff434432bb8ecb2742d0545, type: 3}
+  Ribbon: {fileID: 21300000, guid: f49244ed05d7e4484a65eccd71082527, type: 3}
+  GiftIcon: {fileID: 21300000, guid: bcf0c64db1a7b4631b3d2c5f6c156b81, type: 3}
+  ClaimedIcon: {fileID: 21300000, guid: 67937dd015ba54bd9b10bcbd1c5c013e, type: 3}
+  LockedIcon: {fileID: 21300000, guid: 06fd2aca8df544e7589f43c2dcd7a537, type: 3}
+  UIFont: {fileID: 11400000, guid: 1cf3d1b6e36888a4bb0a92a668832702, type: 2}
+  RewardSound: {fileID: 8300000, guid: d277e116012604f73833af4d67a01fa0, type: 3}

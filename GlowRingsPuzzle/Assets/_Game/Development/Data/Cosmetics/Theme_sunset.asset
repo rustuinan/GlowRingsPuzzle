@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5832868650572f547986d5270bdac650, type: 3}
+  m_Name: Theme_sunset
+  m_EditorClassIdentifier: 
+  Id: sunset
+  CoinPrice: 1200
+  IsOriginal: 0
+  BoardSurfaceMaterials:
+  - {fileID: 2100000, guid: a301e4dea16229141b10d54d040ba631, type: 2}
+  - {fileID: 2100000, guid: 5085f286670726f418d8a9b89e492463, type: 2}
+  - {fileID: 2100000, guid: 1bbf7c821774c4f43abb09516eb5c53b, type: 2}
+  - {fileID: 2100000, guid: 0e162b40d4694834cb76aa022e3ffe82, type: 2}
+  BackgroundTop: {r: 0.5058824, g: 0.27450982, b: 0.42352942, a: 1}
+  BackgroundBottom: {r: 0.90588236, g: 0.6392157, b: 0.5058824, a: 1}
+  Surface: {r: 0.29411766, g: 0.16862746, b: 0.29411766, a: 1}
+  Accent: {r: 1, g: 0.8862745, b: 0.69803923, a: 1}
+  Secondary: {r: 1, g: 0.7411765, b: 0.8117647, a: 1}
+  Text: {r: 0.972549, g: 0.95686275, b: 1, a: 1}
+  BoardFace: {r: 0.8980392, g: 0.79607844, b: 0.78039217, a: 1}
+  BoardFrame: {r: 0.45490196, g: 0.3019608, b: 0.3647059, a: 1}
+  BoardGap: {r: 0.17286274, g: 0.1147451, b: 0.13858823, a: 1}
+  Atmosphere: 0
+  themeName: Coral Sunset
+  requiredScore: 1500
+  ringModelData: {fileID: 11400000, guid: aec260652a42dd64084ad59cd97bd633, type: 2}
+  ringColors:
+  - {fileID: 11400000, guid: c0cee2e0d3c4cbf48a538e44a9a0329e, type: 2}
+  - {fileID: 11400000, guid: baed4474f6221c74783ed9e1907324c7, type: 2}
+  - {fileID: 11400000, guid: 444b76fd53a497c448332e228bce3a57, type: 2}
+  - {fileID: 11400000, guid: 614cb983712adb14a83a0d5b25947ee3, type: 2}
+  - {fileID: 11400000, guid: e704acfea5a03cc40b1cf012257a9ea1, type: 2}
+  - {fileID: 11400000, guid: e1e2575d617dd9349bb9f4b87d250678, type: 2}
+  boardMaterial: {fileID: 0}
+  cellMaterial: {fileID: 0}
+  backgroundMaterial: {fileID: 0}

@@ -61,11 +61,13 @@ public sealed class AdMobManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        NoAdsSave.Changed += RefreshNoAds;
         InitializeAds();
     }
 
     private void OnDestroy()
     {
+        NoAdsSave.Changed -= RefreshNoAds;
         if (Instance == this)
         {
             Instance = null;
@@ -77,6 +79,7 @@ public sealed class AdMobManager : MonoBehaviour
 
     public bool ShowInterstitialAfterLevelStart()
     {
+        if (NoAdsSave.Owned) return false;
         if (!initialized || fullScreenAdShowing || interstitialAd == null || !interstitialAd.CanShowAd())
         {
             if (initialized)
@@ -147,6 +150,7 @@ public sealed class AdMobManager : MonoBehaviour
 
     private void LoadInterstitial()
     {
+        if (NoAdsSave.Owned) return;
         if (!initialized || loadingInterstitial || fullScreenAdShowing ||
             (interstitialAd != null && interstitialAd.CanShowAd()))
         {
@@ -167,6 +171,7 @@ public sealed class AdMobManager : MonoBehaviour
                 }
 
                 loadingInterstitial = false;
+                if (NoAdsSave.Owned) { ad?.Destroy(); return; }
 
                 if (error != null || ad == null)
                 {
@@ -294,6 +299,7 @@ public sealed class AdMobManager : MonoBehaviour
 
     private void ScheduleInterstitialRetry()
     {
+        if (NoAdsSave.Owned) return;
         if (interstitialRetryRoutine == null && isActiveAndEnabled)
         {
             interstitialRetryRoutine = StartCoroutine(RetryInterstitialRoutine());
@@ -305,6 +311,12 @@ public sealed class AdMobManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(RetryDelaySeconds);
         interstitialRetryRoutine = null;
         LoadInterstitial();
+    }
+    private void RefreshNoAds()
+    {
+        if (!NoAdsSave.Owned) return;
+        if (interstitialRetryRoutine != null) { StopCoroutine(interstitialRetryRoutine); interstitialRetryRoutine = null; }
+        DestroyInterstitial();
     }
 
     private void ScheduleRewardedRetry()

@@ -14,7 +14,7 @@ public static class MobileLayoutChecks
     private static int oldSize;
     private static bool oldBackground;
     private static int scenarios;
-    private static readonly int[,] Sizes = {{320,568},{360,640},{390,844},{412,915},{768,1024},{1024,1366},{1920,1080}};
+    private static readonly int[,] Sizes = {{320,480},{320,568},{360,640},{390,844},{412,915},{768,1024},{1024,1366},{1920,1080}};
 
     [MenuItem("Tools/Glow Rings/Validate Mobile Screens (Play Mode)")]
     public static void Run()
@@ -72,6 +72,12 @@ public static class MobileLayoutChecks
                 menu.ClosePage(); Audit(true);
                 foreach (MenuPage page in Enum.GetValues(typeof(MenuPage)))
                 { menu.ShowPage(page); Canvas.ForceUpdateCanvases(); Audit(true); }
+                menu.ShowPage(MenuPage.Shop);
+                var store = UnityEngine.Object.FindObjectOfType<CosmeticsStoreUI>();
+                Canvas.ForceUpdateCanvases(); Audit(true);
+                var coinScroll = store.GetComponentInChildren<ScrollRect>();
+                coinScroll.verticalNormalizedPosition = 0; Canvas.ForceUpdateCanvases(); Audit(true);
+                coinScroll.verticalNormalizedPosition = 1;
                 menu.ClosePage();
                 ScrollRect scroll = UnityEngine.Object.FindObjectOfType<ScrollRect>();
                 scroll.verticalNormalizedPosition = 0; Canvas.ForceUpdateCanvases(); Audit(true);
@@ -153,6 +159,9 @@ public static class MobileLayoutChecks
             text.ForceMeshUpdate();
             Require(!text.isTextOverflowing, "Text overflow: " + text.name + " / " + text.text);
         }
+        foreach (RoundedPanelGraphic panel in UnityEngine.Object.FindObjectsOfType<RoundedPanelGraphic>())
+            if (panel.name == "Shop Page" || panel.name == "Daily Spin Modal" || panel.name == "Daily Reward Modal")
+                Require(Contains(safeBounds, Bounds((RectTransform)panel.transform)), "Modal outside safe area: " + panel.name);
         if (!menu)
         {
             Camera camera = Camera.main;

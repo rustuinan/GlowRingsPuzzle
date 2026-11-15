@@ -11,6 +11,7 @@ public class Ring : MonoBehaviour
     [SerializeField] private GameObject currentModel;
 
     private Renderer[] currentRenderers;
+    private GameObject appliedPrefab;
 
     public RingLayer Layer
     {
@@ -146,12 +147,13 @@ public class Ring : MonoBehaviour
 
     private void ApplyModel(ThemeData themeData)
     {
-        if (themeData.RingModelData == null)
+        var models = themeData.RingModelData;
+        if (models == null)
         {
             return;
         }
 
-        GameObject modelPrefab = themeData.RingModelData.GetModel(layer);
+        GameObject modelPrefab = models.GetModel(layer);
 
         if (modelPrefab == null)
         {
@@ -159,13 +161,16 @@ public class Ring : MonoBehaviour
             return;
         }
 
+        if (currentModel != null && appliedPrefab == modelPrefab) return;
         if (currentModel != null)
         {
+            currentModel.SetActive(false);
             DestroyImmediateSafe(currentModel);
             currentModel = null;
         }
 
         currentModel = Instantiate(modelPrefab, modelParent);
+        appliedPrefab = modelPrefab;
         currentModel.transform.localPosition = Vector3.zero;
         currentModel.transform.localRotation = Quaternion.identity;
         currentModel.transform.localScale = Vector3.one;

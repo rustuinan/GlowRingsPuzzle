@@ -1,0 +1,163 @@
+key|es|fr|pt|id|ru|zh
+PLAY|JUGAR|JOUER|JOGAR|MAIN|ИГРАТЬ|开始游戏
+SETTINGS|AJUSTES|PARAMÈTRES|CONFIGURAÇÕES|PENGATURAN|НАСТРОЙКИ|设置
+MUSIC|MÚSICA|MUSIQUE|MÚSICA|MUSIK|МУЗЫКА|音乐
+SOUND|SONIDO|SON|SOM|SUARA|ЗВУК|音效
+VIBRATION|VIBRACIÓN|VIBRATION|VIBRAÇÃO|GETARAN|ВИБРАЦИЯ|振动
+HIGH SCORE|RÉCORD|RECORD|RECORDE|REKOR|РЕКОРД|最高分
+HIGHSCORE MODE|MODO RÉCORD|MODE RECORD|MODO RECORDE|MODE REKOR|РЕЖИМ РЕКОРДА|挑战最高分
+SCORE|PUNTOS|SCORE|PONTOS|SKOR|СЧЁТ|分数
+PUZZLE MODE|MODO PUZLE|MODE PUZZLE|MODO QUEBRA-CABEÇA|MODE TEKA-TEKI|ГОЛОВОЛОМКИ|解谜模式
+Puzzle {0}|Puzle {0}|Puzzle {0}|Quebra-cabeça {0}|Teka-teki {0}|Головоломка {0}|谜题 {0}
+Clear {0} rings in {1} moves|Elimina {0} anillos en {1} jugadas|Effacez {0} anneaux en {1} coups|Limpe {0} anéis em {1} jogadas|Bersihkan {0} cincin dalam {1} langkah|Уберите {0} колец за {1} ход.|{1} 步消除 {0} 个圆环
+Moves left {0}|Jugadas restantes {0}|Coups restants {0}|Jogadas restantes {0}|Sisa langkah {0}|Осталось ходов {0}|余下步数 {0}
+Rings cleared {0}/{1}|Anillos eliminados {0}/{1}|Anneaux effacés {0}/{1}|Anéis limpos {0}/{1}|Cincin bersih {0}/{1}|Убрано колец {0}/{1}|已消除圆环 {0}/{1}
+TRY AGAIN|REINTENTAR|RÉESSAYER|TENTAR DE NOVO|COBA LAGI|ПОВТОРИТЬ|再试一次
+PUZZLE COMPLETE|PUZLE RESUELTO|PUZZLE RÉSOLU|QUEBRA-CABEÇA CONCLUÍDO|TEKA-TEKI SELESAI|ГОЛОВОЛОМКА РЕШЕНА|谜题完成
+Solve handcrafted ring challenges.|Resuelve retos de anillos.|Résolvez des défis d’anneaux.|Resolva desafios de anéis.|Pecahkan tantangan cincin.|Решайте задачи с кольцами.|挑战精心设计的圆环谜题。
+DAILY\nREWARD|PREMIO\nDIARIO|CADEAU\nDU JOUR|PRÊMIO\nDIÁRIO|HADIAH\nHARIAN|НАГРАДА\nДНЯ|每日\n奖励
+DAILY\nSPIN|RULETA\nDIARIA|ROUE\nDU JOUR|ROLETA\nDIÁRIA|RODA\nHARIAN|КОЛЕСО\nДНЯ|每日\n转盘
+DAILY\nTASKS|TAREAS\nDIARIAS|DÉFIS\nDU JOUR|TAREFAS\nDIÁRIAS|MISI\nHARIAN|ЗАДАНИЯ\nДНЯ|每日\n任务
+SHOP|TIENDA|BOUTIQUE|LOJA|TOKO|МАГАЗИН|商店
+CLAIM|COBRAR|RÉCUPÉRER|RESGATAR|AMBIL|ПОЛУЧИТЬ|领取
+CLAIMED|COBRADO|REÇU|RESGATADO|DIAMBIL|ПОЛУЧЕНО|已领取
+DONE|LISTO|TERMINÉ|CONCLUÍDO|SELESAI|ГОТОВО|已完成
+FINISH|TERMINAR|TERMINER|FINALIZAR|SELESAIKAN|ЗАВЕРШИТЬ|完成
+FREE|GRATIS|GRATUIT|GRÁTIS|GRATIS|БЕСПЛ.|免费
+BACK|VOLVER|RETOUR|VOLTAR|KEMBALI|НАЗАД|返回
+NO MOVES|SIN MOVIMIENTOS|PLUS DE COUPS|SEM JOGADAS|TAK ADA LANGKAH|НЕТ ХОДОВ|无可用步数
+GAME OVER|FIN DE PARTIDA|PARTIE TERMINÉE|FIM DE JOGO|PERMAINAN BERAKHIR|ИГРА ОКОНЧЕНА|游戏结束
+CONTINUE|CONTINUAR|CONTINUER|CONTINUAR|LANJUTKAN|ПРОДОЛЖИТЬ|继续
+<  MAIN MENU|<  MENÚ PRINCIPAL|<  MENU PRINCIPAL|<  MENU PRINCIPAL|<  MENU UTAMA|<  ГЛАВНОЕ МЕНЮ|<  主菜单
+END RUN|TERMINAR PARTIDA|TERMINER LA PARTIE|ENCERRAR PARTIDA|AKHIRI PERMAINAN|ЗАВЕРШИТЬ ИГРУ|结束本局
+CHANGE PIECE|CAMBIAR PIEZA|CHANGER DE PIÈCE|TROCAR PEÇA|GANTI KEPING|СМЕНИТЬ ФИГУРУ|更换圆环
+CELL BOMB|BOMBA DE CASILLA|BOMBE DE CASE|BOMBA DE CASA|BOM PETAK|БОМБА ДЛЯ КЛЕТКИ|格子炸弹
+Get the next ring|Recibe el siguiente anillo|Recevez l’anneau suivant|Receba o próximo anel|Ambil cincin berikutnya|Получите следующее кольцо|获得下一个圆环
+Clear one cell|Vacía una casilla|Videz une case|Limpe uma casa|Kosongkan satu petak|Очистите одну клетку|清除一个格子
+Use a booster to keep playing.|Usa una ayuda para seguir jugando.|Utilisez un bonus pour continuer.|Use um reforço para continuar.|Gunakan bantuan untuk melanjutkan.|Используйте усилитель, чтобы продолжить.|使用道具继续游戏。
+TAP A CELL TO CLEAR\nTap bomb again to cancel|TOCA UNA CASILLA\nToca la bomba para cancelar|TOUCHEZ UNE CASE\nRetouchez la bombe pour annuler|TOQUE NUMA CASA\nToque na bomba para cancelar|KETUK PETAK\nKetuk bom untuk membatalkan|НАЖМИТЕ НА КЛЕТКУ\nНажмите на бомбу для отмены|点按格子进行清除\n再次点按炸弹可取消
+DAILY TASKS|TAREAS DIARIAS|DÉFIS DU JOUR|TAREFAS DIÁRIAS|MISI HARIAN|ЕЖЕДНЕВНЫЕ ЗАДАНИЯ|每日任务
+IN PROGRESS|EN CURSO|EN COURS|EM ANDAMENTO|BERJALAN|В ПРОЦЕССЕ|进行中
+Place 15 pieces|Coloca 15 piezas|Placez 15 pièces|Coloque 15 peças|Letakkan 15 keping|Разместите 15 фигур|放置15个棋子
+Clear 18 rings in matches|Elimina 18 anillos al combinar|Éliminez 18 anneaux|Elimine 18 anéis em combinações|Hapus 18 cincin lewat kecocokan|Уберите 18 колец в комбинациях|通过匹配消除18个圆环
+Earn 600 points|Gana 600 puntos|Gagnez 600 points|Ganhe 600 pontos|Raih 600 poin|Наберите 600 очков|获得600分
+Progress carries across games.|El progreso se acumula entre partidas.|La progression se cumule entre les parties.|O progresso acumula entre partidas.|Progres berlanjut antarpermainan.|Прогресс суммируется между играми.|进度会跨局累计。
+YOUR RECORDS|TUS RÉCORDS|VOS RECORDS|SEUS RECORDES|REKOR ANDA|ВАШИ РЕКОРДЫ|你的纪录
+STATISTICS|ESTADÍSTICAS|STATISTIQUES|ESTATÍSTICAS|STATISTIK|СТАТИСТИКА|统计
+ACHIEVEMENTS|LOGROS|SUCCÈS|CONQUISTAS|PENCAPAIAN|ДОСТИЖЕНИЯ|成就
+BADGES|INSIGNIAS|BADGES|EMBLEMAS|LENCANA|ЗНАЧКИ|徽章
+BADGES EARNED · {0} / {1}|INSIGNIAS GANADAS · {0} / {1}|BADGES OBTENUS · {0} / {1}|EMBLEMAS OBTIDOS · {0} / {1}|LENCANA DIPEROLEH · {0} / {1}|ПОЛУЧЕНО ЗНАЧКОВ · {0} / {1}|已获得徽章 · {0} / {1}
+LIFETIME STATISTICS|HISTORIAL COMPLETO|STATISTIQUES CUMULÉES|ESTATÍSTICAS TOTAIS|STATISTIK TOTAL|ЗА ВСЁ ВРЕМЯ|累计统计
+RUNS PLAYED|PARTIDAS JUGADAS|PARTIES JOUÉES|PARTIDAS JOGADAS|PERMAINAN|СЫГРАНО ПАРТИЙ|游戏局数
+PIECES PLACED|PIEZAS COLOCADAS|PIÈCES PLACÉES|PEÇAS COLOCADAS|KEPING DILETAKKAN|РАЗМЕЩЕНО ФИГУР|放置棋子
+MATCHING MOVES|JUGADAS CON COMBO|COUPS AVEC ALIGNEMENT|JOGADAS COM COMBINAÇÃO|LANGKAH COCOK|ХОДЫ С КОМБИНАЦИЕЙ|匹配步数
+RINGS CLEARED|ANILLOS ELIMINADOS|ANNEAUX ÉLIMINÉS|ANÉIS ELIMINADOS|CINCIN DIHAPUS|УБРАНО КОЛЕЦ|消除圆环
+TOTAL POINTS|PUNTOS TOTALES|POINTS TOTAUX|TOTAL DE PONTOS|TOTAL POIN|ВСЕГО ОЧКОВ|累计分数
+BEST COMBO|MEJOR COMBO|MEILLEUR COMBO|MELHOR COMBO|KOMBO TERBAIK|ЛУЧШЕЕ КОМБО|最佳连击
+ALL CLEARS|TABLEROS VACIADOS|PLATEAUX VIDÉS|TABULEIROS LIMPOS|PAPAN BERSIH|ПОЛНЫЕ ОЧИСТКИ|清空棋盘次数
+MULTI-MATCH MOVES|COMBOS MÚLTIPLES|ALIGNEMENTS MULTIPLES|COMBINAÇÕES MÚLTIPLAS|COCOK GANDA|МУЛЬТИКОМБИНАЦИИ|多重匹配步数
+MATCH RATE|TASA DE COMBOS|TAUX D’ALIGNEMENT|TAXA DE COMBINAÇÃO|RASIO COCOK|ДОЛЯ КОМБИНАЦИЙ|匹配率
+BOMBS USED|BOMBAS USADAS|BOMBES UTILISÉES|BOMBAS USADAS|BOM DIGUNAKAN|ИСПОЛЬЗОВАНО БОМБ|使用炸弹
+PIECE CHANGES|CAMBIOS DE PIEZA|PIÈCES CHANGÉES|TROCAS DE PEÇA|KEPING DIGANTI|СМЕНЫ ФИГУР|更换棋子
+UNLOCKED|DESBLOQUEADO|DÉBLOQUÉ|DESBLOQUEADO|TERBUKA|ОТКРЫТО|已解锁
+FIRST MOVE|PRIMER MOVIMIENTO|PREMIER COUP|PRIMEIRA JOGADA|LANGKAH PERTAMA|ПЕРВЫЙ ХОД|第一步
+Place a piece|Coloca una pieza|Placez une pièce|Coloque uma peça|Letakkan satu keping|Разместите фигуру|放置一个棋子
+GETTING STARTED|PRIMEROS PASOS|PREMIERS PAS|PRIMEIROS PASSOS|AWAL PERJALANAN|ПЕРВЫЕ ШАГИ|初露锋芒
+Play 10 runs|Juega 10 partidas|Jouez 10 parties|Jogue 10 partidas|Mainkan 10 permainan|Сыграйте 10 партий|完成10局游戏
+RING COLLECTOR|COLECCIONISTA|COLLECTIONNEUR|COLECIONADOR|KOLEKTOR CINCIN|КОЛЛЕКЦИОНЕР|圆环收藏家
+Clear 100 rings in matches|Elimina 100 anillos al combinar|Éliminez 100 anneaux|Elimine 100 anéis em combinações|Hapus 100 cincin lewat kecocokan|Уберите 100 колец в комбинациях|通过匹配消除100个圆环
+CLEAN SWEEP|TABLERO LIMPIO|COUP DE BALAI|LIMPEZA TOTAL|PAPAN BERSIH|ЧИСТАЯ ДОСКА|全盘清除
+Clear the entire board in a match|Vacía el tablero con una combinación|Videz le plateau en un coup|Limpe o tabuleiro com uma combinação|Kosongkan papan lewat kecocokan|Очистите всё поле комбинацией|一次匹配清空整个棋盘
+DOUBLE TAKE|DOBLE JUGADA|DOUBLE COUP|JOGADA DUPLA|LANGKAH GANDA|ДВОЙНОЙ ХОД|双重惊喜
+Trigger 5 multi-match moves|Haz 5 jugadas con varios combos|Réalisez 5 coups multiples|Faça 5 jogadas com combinações múltiplas|Buat 5 langkah dengan kecocokan ganda|Сделайте 5 мультикомбинаций|完成5次多重匹配
+COMBO MASTER|MAESTRO DEL COMBO|MAÎTRE DES COMBOS|MESTRE DOS COMBOS|MASTER KOMBO|МАСТЕР КОМБО|连击大师
+Reach a x5 combo|Alcanza un combo x5|Atteignez un combo x5|Alcance um combo x5|Raih kombo x5|Достигните комбо x5|达到5倍连击
+HIGH FLYER|ALTO VUELO|HAUT VOL|VOO ALTO|TERBANG TINGGI|ВЫСОКИЙ ПОЛЁТ|一飞冲天
+Reach a score of 2,000|Consigue 2000 puntos|Atteignez 2 000 points|Alcance 2.000 pontos|Raih skor 2.000|Наберите 2 000 очков|单局获得2000分
+RING VETERAN|VETERANO DE ANILLOS|VÉTÉRAN DES ANNEAUX|VETERANO DOS ANÉIS|VETERAN CINCIN|ВЕТЕРАН КОЛЕЦ|圆环老手
+Place 250 pieces|Coloca 250 piezas|Placez 250 pièces|Coloque 250 peças|Letakkan 250 keping|Разместите 250 фигур|放置250个棋子
+DAILY SPIN|RULETA DIARIA|ROUE DU JOUR|ROLETA DIÁRIA|RODA HARIAN|КОЛЕСО ДНЯ|每日转盘
+Unlimited free spins - test mode|Giros gratis ilimitados · Prueba|Tours gratuits illimités · Test|Giros grátis ilimitados · Teste|Putaran gratis tanpa batas · Uji coba|Бесплатные вращения без лимита · Тест|免费无限转动 · 测试模式
+SPIN & WIN|GIRA Y GANA|TOURNEZ ET GAGNEZ|GIRE E GANHE|PUTAR DAN MENANG|КРУТИТЕ И ВЫИГРЫВАЙТЕ|转动赢奖励
+WIN COINS|GANA MONEDAS|GAGNEZ DES PIÈCES|GANHE MOEDAS|MENANGKAN KOIN|ВЫИГРАЙТЕ МОНЕТЫ|赢取金币
+Spend your rewards in the shop|Gasta tus premios en la tienda|Dépensez vos gains en boutique|Gaste seus prêmios na loja|Belanjakan hadiah di toko|Тратьте награды в магазине|奖励可在商店使用
+LAST REWARD|ÚLTIMO PREMIO|DERNIÈRE RÉCOMPENSE|ÚLTIMO PRÊMIO|HADIAH TERAKHIR|ПОСЛЕДНЯЯ НАГРАДА|上次奖励
+Your reward is in your balance|El premio está en tu saldo|Votre gain est sur votre solde|O prêmio está no seu saldo|Hadiah sudah masuk ke saldo|Награда зачислена на баланс|奖励已存入余额
+SPINNING|GIRANDO|EN COURS|GIRANDO|BERPUTAR|ВРАЩЕНИЕ|转动中
+SPINNING...|GIRANDO...|EN COURS...|GIRANDO...|BERPUTAR...|ВРАЩЕНИЕ...|转动中…
+RESUMING SPIN|REANUDANDO GIRO|REPRISE DU TOUR|RETOMANDO GIRO|MELANJUTKAN PUTARAN|ВОЗОБНОВЛЕНИЕ|恢复转动
+GOOD LUCK!|¡BUENA SUERTE!|BONNE CHANCE !|BOA SORTE!|SEMOGA BERUNTUNG!|УДАЧИ!|祝你好运！
+The pointer decides your reward|La flecha indica tu premio|La flèche indique votre gain|A seta indica seu prêmio|Penunjuk menentukan hadiah|Стрелка покажет награду|指针指向你的奖励
+YOU WON!|¡GANASTE!|GAGNÉ !|VOCÊ GANHOU!|ANDA MENANG!|ВЫ ВЫИГРАЛИ!|恭喜中奖！
+Added to your balance|Añadido a tu saldo|Ajouté à votre solde|Adicionado ao saldo|Ditambahkan ke saldo|Зачислено на баланс|已添加到余额
+REWARD PENDING|PREMIO PENDIENTE|GAIN EN ATTENTE|PRÊMIO PENDENTE|HADIAH TERTUNDA|НАГРАДА ОЖИДАЕТ|奖励待领取
+Reopen to finish collecting your reward|Vuelve a abrir para cobrar tu premio|Rouvrez pour récupérer votre gain|Reabra para resgatar o prêmio|Buka kembali untuk mengambil hadiah|Откройте снова, чтобы получить награду|重新打开以领取奖励
+SPIN|GIRAR|TOURNER|GIRAR|PUTAR|КРУТИТЬ|转动
+SPIN USED|GIRO USADO|TOUR UTILISÉ|GIRO USADO|SUDAH DIPAKAI|ВРАЩЕНИЕ ИСПОЛЬЗОВАНО|次数已用完
+Every spin wins coins|Cada giro da monedas|Chaque tour rapporte des pièces|Cada giro dá moedas|Setiap putaran memberi koin|Каждое вращение приносит монеты|每次转动都能获得金币
+ALL CLEAR!|¡TABLERO LIMPIO!|PLATEAU VIDÉ !|TABULEIRO LIMPO!|PAPAN BERSIH!|ПОЛНАЯ ОЧИСТКА!|全盘清除！
+DOUBLE MATCH!|¡DOBLE COMBO!|DOUBLE ALIGNEMENT !|COMBINAÇÃO DUPLA!|COCOK GANDA!|ДВОЙНАЯ КОМБИНАЦИЯ!|双重匹配！
+LEGENDARY!|¡LEGENDARIO!|LÉGENDAIRE !|LENDÁRIO!|LEGENDARIS!|ЛЕГЕНДАРНО!|传奇！
+AMAZING!|¡INCREÍBLE!|INCROYABLE !|INCRÍVEL!|LUAR BIASA!|НЕВЕРОЯТНО!|太棒了！
+SUPER!|¡GENIAL!|SUPER !|INCRÍVEL!|HEBAT!|СУПЕР!|精彩！
+GREAT!|¡ESTUPENDO!|GÉNIAL !|ÓTIMO!|BAGUS SEKALI!|ОТЛИЧНО!|真棒！
+GOOD!|¡BIEN!|BIEN !|BOM!|BAGUS!|ХОРОШО!|不错！
+COINS|MONEDAS|PIÈCES|MOEDAS|KOIN|МОНЕТЫ|金币
+COIN|MONEDAS|PIÈCES|MOEDAS|KOIN|МОНЕТЫ|金币
+EXTRA LIFE|VIDA EXTRA|VIE SUPPLÉMENTAIRE|VIDA EXTRA|NYAWA TAMBAHAN|ДОПОЛНИТЕЛЬНАЯ ЖИЗНЬ|额外生命
+LOADING|CARGANDO|CHARGEMENT|CARREGANDO|MEMUAT|ЗАГРУЗКА|加载中
+DAILY REWARDS|PREMIOS DIARIOS|RÉCOMPENSES DU JOUR|PRÊMIOS DIÁRIOS|HADIAH HARIAN|ЕЖЕДНЕВНЫЕ НАГРАДЫ|每日奖励
+REWARD CLAIMED|PREMIO COBRADO|RÉCOMPENSE REÇUE|PRÊMIO RESGATADO|HADIAH DIAMBIL|НАГРАДА ПОЛУЧЕНА|奖励已领取
+TODAY|HOY|AUJOURD’HUI|HOJE|HARI INI|СЕГОДНЯ|今天
+WEEKLY\nREWARD|PREMIO\nSEMANAL|RÉCOMPENSE\nHEBDO|PRÊMIO\nSEMANAL|HADIAH\nMINGGUAN|НАГРАДА\nНЕДЕЛИ|每周\n奖励
+READY|LISTO|PRÊT|PRONTO|SIAP|ГОТОВО|可领取
+Come back daily for bigger rewards!|¡Vuelve cada día para ganar más!|Revenez chaque jour pour gagner plus !|Volte todo dia para ganhar mais!|Kembali tiap hari untuk hadiah lebih besar!|Возвращайтесь каждый день за наградами!|每天登录，领取更多奖励！
+One reward a day · Keep your progress|Un premio al día · Conserva tu progreso|Un gain par jour · Progression conservée|Um prêmio por dia · Progresso mantido|Satu hadiah per hari · Progres tersimpan|Одна награда в день · Прогресс сохранён|每日一份奖励 · 保留进度
+NEXT REWARD IN|PRÓXIMO PREMIO EN|PROCHAINE RÉCOMPENSE DANS|PRÓXIMO PRÊMIO EM|HADIAH BERIKUTNYA|ДО НОВОЙ НАГРАДЫ|下次奖励倒计时
+RESETS IN|SE REINICIA EN|RÉINITIALISATION DANS|REINICIA EM|DIATUR ULANG DALAM|ДО ОБНОВЛЕНИЯ|刷新倒计时
+Next free spin in|Siguiente giro gratis en|Prochain tour gratuit dans|Próximo giro grátis em|Putaran gratis berikutnya|До бесплатного вращения|下次免费转动
+BACK TO MENU|VOLVER AL MENÚ|RETOUR AU MENU|VOLTAR AO MENU|KEMBALI KE MENU|ВЕРНУТЬСЯ В МЕНЮ|返回菜单
+BACK TO GAME|VOLVER AL JUEGO|RETOUR AU JEU|VOLTAR AO JOGO|KEMBALI KE GAME|ВЕРНУТЬСЯ В ИГРУ|返回游戏
+NO ADS|SIN ANUNCIOS|SANS PUB|SEM ANÚNCIOS|TANPA IKLAN|БЕЗ РЕКЛАМЫ|去除广告
+COIN POUCH|BOLSITA DE MONEDAS|POCHETTE DE PIÈCES|BOLSA DE MOEDAS|KANTONG KOIN|КОШЕЛЁК МОНЕТ|金币小袋
+COIN BAG|BOLSA DE MONEDAS|SAC DE PIÈCES|SACO DE MOEDAS|KARUNG KOIN|МЕШОК МОНЕТ|金币袋
+COIN CHEST|COFRE DE MONEDAS|COFFRE DE PIÈCES|BAÚ DE MOEDAS|PETI KOIN|СУНДУК МОНЕТ|金币宝箱
+Scroll to see more packs|Desliza para ver más packs|Défilez pour voir plus de packs|Role para ver mais pacotes|Gulir untuk melihat paket lain|Прокрутите, чтобы увидеть все наборы|滚动查看更多礼包
+Removes interstitial ads.\nRewarded ads remain optional.|Elimina anuncios entre partidas.\nLos anuncios con premio son opcionales.|Supprime les pubs entre les parties.\nLes pubs avec récompense restent facultatives.|Remove anúncios entre partidas.\nAnúncios com prêmio continuam opcionais.|Hapus iklan antarpermainan.\nIklan berhadiah tetap opsional.|Убирает рекламу между играми.\nРеклама за награду остаётся по желанию.|去除局间广告。\n奖励广告仍可自行选择观看。
+PURCHASED|COMPRADO|ACHETÉ|COMPRADO|DIBELI|КУПЛЕНО|已购买
+PROCESSING...|PROCESANDO...|EN COURS...|PROCESSANDO...|MEMPROSES...|ОБРАБОТКА...|处理中…
+LOADING...|CARGANDO...|CHARGEMENT...|CARREGANDO...|MEMUAT...|ЗАГРУЗКА...|加载中…
+UNAVAILABLE|NO DISPONIBLE|INDISPONIBLE|INDISPONÍVEL|TIDAK TERSEDIA|НЕДОСТУПНО|暂不可用
+Preparing Google Play...|Preparando Google Play...|Préparation de Google Play...|Preparando o Google Play...|Menyiapkan Google Play...|Подготовка Google Play...|正在准备 Google Play…
+Products are currently unavailable.|Los productos no están disponibles.|Les produits sont indisponibles.|Os produtos estão indisponíveis.|Produk sedang tidak tersedia.|Товары сейчас недоступны.|商品暂不可用。
+Purchases are available through Google Play on Android.|Las compras están disponibles en Android mediante Google Play.|Les achats sont disponibles sur Android via Google Play.|Compras disponíveis no Android pelo Google Play.|Pembelian tersedia melalui Google Play di Android.|Покупки доступны на Android через Google Play.|可在 Android 上通过 Google Play 购买。
+Connecting to Google Play...|Conectando con Google Play...|Connexion à Google Play...|Conectando ao Google Play...|Menghubungkan ke Google Play...|Подключение к Google Play...|正在连接 Google Play…
+Could not connect to Google Play. Please try again.|No se pudo conectar con Google Play. Inténtalo de nuevo.|Connexion à Google Play impossible. Réessayez.|Não foi possível conectar ao Google Play. Tente novamente.|Tidak dapat terhubung ke Google Play. Coba lagi.|Не удалось подключиться к Google Play. Повторите попытку.|无法连接 Google Play，请重试。
+Connection timed out. Please try again.|La conexión agotó el tiempo. Inténtalo de nuevo.|Délai de connexion dépassé. Réessayez.|A conexão expirou. Tente novamente.|Waktu koneksi habis. Coba lagi.|Время подключения истекло. Повторите попытку.|连接超时，请重试。
+Opening Google Play checkout...|Abriendo el pago de Google Play...|Ouverture du paiement Google Play...|Abrindo o pagamento no Google Play...|Membuka pembayaran Google Play...|Открытие оплаты Google Play...|正在打开 Google Play 付款页面…
+Could not start purchase. Please try again.|No se pudo iniciar la compra. Inténtalo de nuevo.|Impossible de démarrer l’achat. Réessayez.|Não foi possível iniciar a compra. Tente novamente.|Pembelian gagal dimulai. Coba lagi.|Не удалось начать покупку. Повторите попытку.|无法发起购买，请重试。
+Choose a pack to pay with Google Play.|Elige un pack para pagar con Google Play.|Choisissez un pack à payer via Google Play.|Escolha um pacote para pagar pelo Google Play.|Pilih paket untuk membayar lewat Google Play.|Выберите набор для оплаты через Google Play.|请选择礼包并通过 Google Play 付款。
+Could not load prices. Reopen the shop to try again.|No se pudieron cargar los precios. Vuelve a abrir la tienda.|Prix indisponibles. Rouvrez la boutique.|Preços indisponíveis. Reabra a loja.|Harga gagal dimuat. Buka kembali toko.|Не удалось загрузить цены. Откройте магазин снова.|无法加载价格，请重新打开商店。
+Could not check previous purchases. Reopen the shop to try again.|No se pudieron revisar las compras previas. Vuelve a abrir la tienda.|Achats précédents non vérifiés. Rouvrez la boutique.|Compras anteriores não verificadas. Reabra a loja.|Pembelian lama gagal diperiksa. Buka kembali toko.|Не удалось проверить прошлые покупки. Откройте магазин снова.|无法检查历史购买，请重新打开商店。
+Could not verify the purchase. Reopen the shop to try again.|No se pudo verificar la compra. Vuelve a abrir la tienda.|Achat non vérifié. Rouvrez la boutique.|Compra não verificada. Reabra a loja.|Pembelian gagal diverifikasi. Buka kembali toko.|Не удалось проверить покупку. Откройте магазин снова.|无法验证购买，请重新打开商店。
+No Ads is active. Interstitial ads are disabled.|Sin anuncios activado. Se quitaron los anuncios entre partidas.|Sans pub activé. Les pubs entre les parties sont désactivées.|Sem anúncios ativo. Anúncios entre partidas desativados.|Tanpa Iklan aktif. Iklan antarpermainan dimatikan.|Режим без рекламы включён.|已启用去广告，局间广告已关闭。
+No Ads is active. Confirmation will resume after reconnecting.|Sin anuncios activo. Se confirmará al reconectar.|Sans pub activé. Confirmation à la reconnexion.|Sem anúncios ativo. Confirmação ao reconectar.|Tanpa Iklan aktif. Konfirmasi dilanjutkan setelah tersambung.|Без рекламы включено. Подтверждение после переподключения.|去广告已启用，重新连接后将继续确认。
+Delivery is pending. Reopen the shop to try again.|Entrega pendiente. Vuelve a abrir la tienda.|Livraison en attente. Rouvrez la boutique.|Entrega pendente. Reabra a loja.|Pengiriman tertunda. Buka kembali toko.|Выдача ожидает. Откройте магазин снова.|发放待处理，请重新打开商店。
+Coins added. Confirmation will resume after reconnecting.|Monedas añadidas. Se confirmará al reconectar.|Pièces ajoutées. Confirmation à la reconnexion.|Moedas adicionadas. Confirmação ao reconectar.|Koin ditambahkan. Konfirmasi dilanjutkan setelah tersambung.|Монеты зачислены. Подтверждение после переподключения.|金币已添加，重新连接后将继续确认。
+Purchase saved. Confirmation will resume after reconnecting.|Compra guardada. Se confirmará al reconectar.|Achat enregistré. Confirmation à la reconnexion.|Compra salva. Confirmação ao reconectar.|Pembelian disimpan. Konfirmasi dilanjutkan setelah tersambung.|Покупка сохранена. Подтверждение после переподключения.|购买已保存，重新连接后将继续确认。
+Purchase cancelled.|Compra cancelada.|Achat annulé.|Compra cancelada.|Pembelian dibatalkan.|Покупка отменена.|购买已取消。
+Purchase failed. Please try again.|Falló la compra. Inténtalo de nuevo.|L’achat a échoué. Réessayez.|A compra falhou. Tente novamente.|Pembelian gagal. Coba lagi.|Покупка не удалась. Повторите попытку.|购买失败，请重试。
+Payment pending. Coins will be added after confirmation.|Pago pendiente. Recibirás las monedas al confirmarse.|Paiement en attente. Les pièces seront ajoutées après confirmation.|Pagamento pendente. Moedas após a confirmação.|Pembayaran tertunda. Koin ditambahkan setelah konfirmasi.|Платёж ожидает. Монеты будут зачислены после подтверждения.|付款待处理，确认后将发放金币。
+Google Play disconnected. Please try again.|Google Play se desconectó. Inténtalo de nuevo.|Google Play déconnecté. Réessayez.|Google Play desconectado. Tente novamente.|Google Play terputus. Coba lagi.|Связь с Google Play потеряна. Повторите попытку.|Google Play 已断开，请重试。
++{0:N0} COINS ADDED!|¡+{0:N0} MONEDAS!|+{0:N0} PIÈCES AJOUTÉES !|+{0:N0} MOEDAS ADICIONADAS!|+{0:N0} KOIN DITAMBAHKAN!|+{0:N0} МОНЕТ ЗАЧИСЛЕНО!|已添加 {0:N0} 金币！
+{0} DAYS COMPLETE  ·  WEEK {1}|{0} DÍAS · SEMANA {1}|{0} JOURS · SEMAINE {1}|{0} DIAS · SEMANA {1}|{0} HARI · MINGGU {1}|ДНЕЙ {0} · НЕДЕЛЯ {1}|完成 {0} 天 · 第 {1} 周
+CLAIM {0:N0} COINS|COBRAR {0:N0} MONEDAS|RÉCUPÉRER {0:N0} PIÈCES|RESGATAR {0:N0} MOEDAS|AMBIL {0:N0} KOIN|ПОЛУЧИТЬ {0:N0} МОНЕТ|领取 {0:N0} 金币
+DAY {0}|DÍA {0}|JOUR {0}|DIA {0}|HARI {0}|ДЕНЬ {0}|第 {0} 天
++{0:N0} COINS!|¡+{0:N0} MONEDAS!|+{0:N0} PIÈCES !|+{0:N0} MOEDAS!|+{0:N0} KOIN!|+{0:N0} МОНЕТ!|+{0:N0} 金币！
+{0:N0} coins await tomorrow!|¡Mañana te esperan {0:N0} monedas!|{0:N0} pièces vous attendent demain !|Amanhã tem {0:N0} moedas!|Besok ada {0:N0} koin!|Завтра вас ждёт {0:N0} монет!|明天可领取 {0:N0} 金币！
+One free spin every {0} hours|Un giro gratis cada {0} horas|Un tour gratuit toutes les {0} heures|Um giro grátis a cada {0} horas|Satu putaran gratis tiap {0} jam|Бесплатное вращение каждые {0} ч|每 {0} 小时免费转动一次
+{0}x COMBO|COMBO x{0}|COMBO x{0}|COMBO x{0}|KOMBO x{0}|КОМБО x{0}|{0} 倍连击
+{0} MATCHES!|¡{0} COMBOS!|{0} ALIGNEMENTS !|{0} COMBINAÇÕES!|{0} KECOCOKAN!|КОМБИНАЦИЙ: {0}!|{0} 重匹配！
+LANGUAGE|IDIOMA|LANGUE|IDIOMA|BAHASA|ЯЗЫК|语言
+AUTOMATIC|AUTOMÁTICO|AUTOMATIQUE|AUTOMÁTICO|OTOMATIS|АВТО|自动
+SYSTEM LANGUAGE|Idioma del dispositivo|Langue de l’appareil|Idioma do dispositivo|Bahasa perangkat|Язык устройства|系统语言

@@ -1,0 +1,15 @@
+# Daily Spin
+
+The main menu Daily Spin button opens a modal wheel using the game's menu style. Press Spin to use one free turn. All eight equal-size sectors have equal chances. The fixed top pointer determines the coin reward, which is automatically credited only after the wheel stops. Close and repeated spins are blocked during the animation.
+
+Default rewards are 50, 100, 150, 250, 400, 600, 1,000 and 1,500 coins. The cooldown is 24 hours from starting the turn. Change the reward list, cooldown, animation duration, coin icon and audio on `Assets/_Game/Resources/DailySpinConfig.asset`. Rewards must be positive and the wheel supports 3–12 sectors. These local placeholder economy settings use the same wallet as the shop.
+
+The chosen stop angle and reward list are saved before the animation under `GlowRings.DailySpin.State`. If the application exits, opening the wheel resumes that same turn and prize. A wallet journal persists the target balance before applying it, then settles the receipt after the balance is saved. Replaying an interrupted grant writes the same target balance rather than adding twice. Completed receipt IDs prevent historical replays; normal spending after settlement is preserved. This is local persistence, not a server-backed anti-cheat system.
+
+After payout, the window shows the won amount, updated balance and countdown. The menu button changes from Free to a cooldown label, or Finish if a turn is pending. A later config change cannot alter a pending spin's displayed prizes. All UI/audio references are loaded through the config resource; the demo pack's example SpinWheel script is not used for awarding currency.
+
+The config currently enables `UnlimitedTestSpins` for testing: existing cooldowns are ignored, and each completed spin pays coins and immediately enables the next spin. Disable this checkbox in `Assets/_Game/Resources/DailySpinConfig.asset` to restore the configured daily cooldown.
+
+The wheel has glossy colored sectors with amounts only, a stationary gold marquee rim, animated bulbs and a jewel pointer. On a win, the landed sector and rim light up, the result displays **You Won**, and a UI burst emits sparkles/confetti plus sixteen coins flying into the balance. The displayed wallet counts up to the already committed balance. `DailySpinRewardVFX` changes presentation only; it never awards currency. Effects use unscaled time, do not intercept input, clear on close, and do not replay when reopening an already paid spin.
+
+`Tools > Glow Rings > Install Daily Spin` creates the config and connects bundled art/audio without resetting existing reward settings. `Validate Daily Spin (Edit Mode)` checks pointer alignment, exact payouts, replay guards, cooldown boundaries and interrupted transactions. `Validate Daily Spin UI (Play Mode)` checks the real menu, wheel/pointer/result/wallet agreement, closing/double-click guards, reopening and interrupted animation recovery. Both test workflows restore all wallet and spin preferences they touch.

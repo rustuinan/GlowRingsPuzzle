@@ -12,7 +12,7 @@ public class MenuContentLayout : MonoBehaviour
     public void Apply()
     {
         if (scroll == null || hero == null) return;
-        float height = Mathf.Max(420f, scroll.viewport.rect.height - 778f);
+        float height = Mathf.Max(420f, scroll.viewport.rect.height - 798f);
         if (Mathf.Abs(hero.preferredHeight - height) > 0.5f) hero.preferredHeight = height;
         if (visual != null) visual.sizeDelta = Vector2.one * Mathf.Min(780f, height - 24f);
     }

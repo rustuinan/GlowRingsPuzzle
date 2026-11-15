@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a95dbad3ff90ff42923ddf91ea66fdd, type: 3}
+  m_Name: DailySpinConfig
+  m_EditorClassIdentifier: 
+  Rewards: 320000006400000096000000fa0000009001000058020000e8030000dc050000
+  CooldownHours: 24
+  UnlimitedTestSpins: 1
+  SpinDuration: 5.5
+  CoinIcon: {fileID: 21300000, guid: 407afb697ff434432bb8ecb2742d0545, type: 3}
+  SpinSound: {fileID: 8300000, guid: 8d0a79fe2451040bc801e7cc86a3e98b, type: 3}
+  RewardSound: {fileID: 8300000, guid: d277e116012604f73833af4d67a01fa0, type: 3}

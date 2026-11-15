@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using TMPro;
 using UnityEditor;
+using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,30 +36,26 @@ public static class GameplayPlanningSetup
             .FirstOrDefault(i => i.transform.parent != null && i.transform.parent.name == "HighScore" && i.sprite != null);
         Sprite frame = frameReference != null ? frameReference.sprite :
             AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GUIPackCartoon/Demo/Sprites/Buttons/Square/Purple.png");
-        RectTransform bombRect = Rect("CellBombButton", root, new Vector2(336, -651), new Vector2(220, 160));
+        RectTransform trashRect = (RectTransform)trash.transform;
+        Vector2 boosterSize = Vector2.Scale(trashRect.rect.size, trashRect.localScale);
+        Sprite boosterFrame = trash.image != null ? trash.image.sprite : frame;
+        RectTransform bombRect = Rect("CellBombButton", root,
+            new Vector2(-trashRect.anchoredPosition.x, trashRect.anchoredPosition.y), boosterSize);
         Image background = bombRect.gameObject.AddComponent<Image>();
-        background.sprite = frame;
+        background.sprite = boosterFrame;
         Button bomb = bombRect.gameObject.AddComponent<Button>();
         bomb.targetGraphic = background;
-        RectTransform badge = Rect("CountBadge", bombRect, new Vector2(0, -104), new Vector2(76, 50));
+        RectTransform badge = Rect("CountBadge", bombRect, new Vector2(-2, -82), new Vector2(101, 112));
         Image badgeImage = badge.gameObject.AddComponent<Image>();
-        badgeImage.sprite = frame; badgeImage.raycastTarget = false;
-        TMP_Text count = Label("Count", badge, font, "2", Vector2.zero, new Vector2(76, 50), 31);
-        Sprite bombSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GUIPackCartoon/Demo/Sprites/Icons/Icons Colored/Bombs/Bomb.png");
-        Image icon = Rect("BombIcon", bombRect, Vector2.zero, new Vector2(105, 105)).gameObject.AddComponent<Image>();
-        if (bombSprite == null) throw new InvalidOperationException("Bomb sprite is missing.");
-        icon.sprite = bombSprite;
-        icon.preserveAspect = true;
+        badgeImage.sprite = boosterFrame; badgeImage.raycastTarget = false;
+        TMP_Text count = Label("Count", badge, font, GameManager.BombPrice + "\n<size=55%>COIN</size>", Vector2.zero, new Vector2(76, 50), 27);
+        NeonBombIcon icon = Rect("BombIcon", bombRect, Vector2.zero, new Vector2(94, 94)).gameObject.AddComponent<NeonBombIcon>();
         icon.raycastTarget = false;
-        Label("BombLabel", root, font, "CELL BOMB", new Vector2(336, -795), new Vector2(260, 45), 27);
-
-        RectTransform nextCard = Rect("NextPiece", root, new Vector2(330, -455), new Vector2(210, 235));
+        RectTransform nextCard = Rect("NextPiece", root, new Vector2(0, -824), new Vector2(160, 148));
         CanvasGroup previewGroup = nextCard.gameObject.AddComponent<CanvasGroup>();
         previewGroup.blocksRaycasts = false;
-        TMP_Text nextTitle = Label("Title", nextCard, font, "NEXT", new Vector2(0, 93), new Vector2(280, 42), 27);
-        RectTransform ringRect = Rect("Rings", nextCard, new Vector2(0, -12), new Vector2(185, 185));
-        NextPiecePreview preview = ringRect.gameObject.AddComponent<NextPiecePreview>();
-        preview.Configure(spawner, nextTitle);
+        NextPiecePreview preview = nextCard.gameObject.AddComponent<NextPiecePreview>();
+        preview.Configure(spawner);
 
         TMP_Text hint = Label("BoosterHint", root, font, "", new Vector2(0, -370), new Vector2(500, 100), 25);
         RectTransform overlayRect = Rect("BombTargets", root, Vector2.zero, Vector2.zero);
@@ -67,29 +64,116 @@ public static class GameplayPlanningSetup
         BombTargetGraphic targets = overlayRect.gameObject.AddComponent<BombTargetGraphic>();
         targets.Configure(manager.Board != null ? manager.Board : UnityEngine.Object.FindObjectOfType<BoardManager>());
         overlayRect.gameObject.SetActive(false);
+        GameplayWalletUI.Install(root, manager, font,
+            AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GUIPackCartoon/Demo/Sprites/Icons/Icons Colored/Coins/Coin.png"));
         RectTransform offerRoot = Rect("BoosterOffer", root, Vector2.zero, Vector2.zero);
         Stretch(offerRoot);
         Image shade = offerRoot.gameObject.AddComponent<Image>();
-        shade.color = new Color(0.015f, 0.01f, 0.06f, 0.88f);
-        RectTransform card = Rect("Card", offerRoot, Vector2.zero, new Vector2(900, 820));
-        RoundedPanelGraphic cardImage = card.gameObject.AddComponent<RoundedPanelGraphic>();
-        cardImage.color = new Color32(26, 17, 78, 255);
-        Label("Title", card, font, "NO MOVES", new Vector2(0, 280), new Vector2(760, 90), 55);
-        Label("Question", card, font, "Would you like to use a booster?\nYou can also end this run.", new Vector2(0, 170), new Vector2(760, 100), 33);
-        Button offerBomb = OfferButton("UseBomb", card, frame, font, new Vector2(0, 25), "USE CELL BOMB", out TMP_Text bombLabel);
-        Button offerDiscard = OfferButton("UseDiscard", card, frame, font, new Vector2(0, -120), "CHANGE PIECE", out TMP_Text discardLabel);
-        Button endRun = OfferButton("EndRun", card, frame, font, new Vector2(0, -285), "END GAME", out TMP_Text endLabel);
-        endLabel.color = new Color32(255, 194, 204, 255);
+        shade.color = new Color32(10, 7, 32, 218);
+        RectTransform card = Rect("Card", offerRoot, Vector2.zero, new Vector2(860, 752));
+        card.gameObject.AddComponent<RoundedPanelGraphic>().SetStyle(
+            new Color32(25, 18, 65, 255), new Color32(154, 128, 243, 255), 44);
+        Label("Title", card, font, "NO MOVES", new Vector2(0, 274), new Vector2(740, 84), 58)
+            .color = new Color32(148, 237, 255, 255);
+        Label("Question", card, font, "Use a booster to keep playing.", new Vector2(0, 197), new Vector2(740, 60), 34);
+        Button offerBomb = OfferButton("UseBomb", card, font, 76, "CELL BOMB", "Clear one cell", GameManager.BombPrice);
+        Button offerDiscard = OfferButton("UseDiscard", card, font, -76, "CHANGE PIECE", "Get the next ring", GameManager.ChangePiecePrice);
+        Button endRun = SettingsAction("EndRun", card, font, "END RUN", -257, 448, 94,
+            new Color32(41, 30, 77, 255), new Color32(130, 106, 173, 255), 32);
         BoosterOfferPanelUI offer = offerRoot.gameObject.AddComponent<BoosterOfferPanelUI>();
-        offer.Configure(manager, offerBomb, offerDiscard, endRun, bombLabel, discardLabel);
+        offer.Configure(manager, offerBomb, offerDiscard, endRun);
         offerRoot.gameObject.SetActive(false);
         GameplayPlanningHUD hud = root.gameObject.AddComponent<GameplayPlanningHUD>();
         hud.Configure(manager, spawner, bomb, count, hint, preview, targets, previewGroup, offer);
+        InstallSettings(root, manager, font);
+        foreach (string name in new[] { "MusicButton", "SoundButton" })
+        {
+            Transform oldButton = parent.Find(name);
+            if (oldButton != null) oldButton.gameObject.SetActive(false);
+        }
+        Transform spawn = (Transform)new SerializedObject(spawner).FindProperty("spawnPoint").objectReferenceValue;
+        Vector3 spawnPosition = spawn.localPosition;
+        spawnPosition.z = -2.55f;
+        spawn.localPosition = spawnPosition;
         EditorUtility.SetDirty(hud);
         EditorUtility.SetDirty(targets);
         EditorSceneManager.MarkSceneDirty(manager.gameObject.scene);
         EditorSceneManager.SaveScene(manager.gameObject.scene);
         Debug.Log("Planning HUD installed and Game scene saved.");
+    }
+
+    private static void InstallSettings(RectTransform root, GameManager game, TMP_FontAsset font)
+    {
+        RectTransform gear = Rect("SettingsButton", root, new Vector2(-90, -79), new Vector2(96, 96));
+        gear.anchorMin = gear.anchorMax = Vector2.one;
+        gear.anchoredPosition = new Vector2(-90, -79);
+        var gearFrame = gear.gameObject.AddComponent<RoundedPanelGraphic>();
+        gearFrame.SetStyle(new Color32(33, 24, 86, 255), new Color32(151, 132, 240, 255), 24);
+        Button open = gear.gameObject.AddComponent<Button>();
+        open.targetGraphic = gearFrame;
+        Image icon = Rect("GearIcon", gear, Vector2.zero, new Vector2(48, 48)).gameObject.AddComponent<Image>();
+        icon.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/GUIPackCartoon/Demo/Sprites/Icons/Icons White/Basic/Settings.png");
+        icon.preserveAspect = true;
+        icon.raycastTarget = false;
+
+        RectTransform panel = Rect("GameplaySettings", root, Vector2.zero, Vector2.zero);
+        Stretch(panel);
+        panel.gameObject.AddComponent<Image>().color = new Color(0.02f, 0.01f, 0.08f, 0.88f);
+        RectTransform card = Rect("Card", panel, Vector2.zero, new Vector2(820, 740));
+        card.gameObject.AddComponent<RoundedPanelGraphic>().SetStyle(
+            new Color32(26, 17, 78, 255), new Color32(145, 128, 233, 255));
+        Label("Title", card, font, "SETTINGS", new Vector2(0, 270), new Vector2(680, 90), 55);
+        Toggle music = AudioToggle("Music", "MUSIC", card, font, 115);
+        Toggle sound = AudioToggle("Sound", "SOUND", card, font, -12);
+        Button close = SettingsAction("Close", card, font, "CONTINUE", -164, 600, 104,
+            new Color32(75, 57, 179, 255), new Color32(135, 240, 255, 255), 35);
+        Button menu = SettingsAction("MainMenu", card, font, "<  MAIN MENU", -283, 480, 82,
+            new Color32(36, 27, 81, 255), new Color32(146, 128, 202, 255), 29);
+
+        GameplaySettingsUI settings = root.gameObject.AddComponent<GameplaySettingsUI>();
+        settings.Configure(game, panel.gameObject, open, music, sound);
+        UnityEventTools.AddPersistentListener(open.onClick, settings.Open);
+        UnityEventTools.AddPersistentListener(music.onValueChanged, settings.SetMusic);
+        UnityEventTools.AddPersistentListener(sound.onValueChanged, settings.SetSound);
+        UnityEventTools.AddPersistentListener(menu.onClick, settings.ReturnToMenu);
+        UnityEventTools.AddPersistentListener(close.onClick, settings.Close);
+        panel.gameObject.SetActive(false);
+    }
+
+    private static Button SettingsAction(string name, Transform parent, TMP_FontAsset font, string caption,
+        float y, float width, float height, Color fill, Color border, float fontSize)
+    {
+        RectTransform rect = Rect(name, parent, new Vector2(0, y), new Vector2(width, height));
+        var frame = rect.gameObject.AddComponent<RoundedPanelGraphic>();
+        frame.SetStyle(fill, border, 24);
+        var button = rect.gameObject.AddComponent<Button>();
+        button.targetGraphic = frame;
+        Label("Label", rect, font, caption, Vector2.zero, new Vector2(width - 32, height), fontSize);
+        return button;
+    }
+
+    private static Toggle AudioToggle(string name, string caption, Transform parent, TMP_FontAsset font, float y)
+    {
+        RectTransform row = Rect(name, parent, new Vector2(0, y), new Vector2(680, 102));
+        var background = row.gameObject.AddComponent<RoundedPanelGraphic>();
+        background.SetStyle(new Color32(44, 33, 100, 255), new Color32(94, 78, 160, 255), 24);
+        Image icon = Rect("Icon", row, new Vector2(-276, 0), new Vector2(44, 44)).gameObject.AddComponent<Image>();
+        string asset = name == "Music" ? "Music - Note" : "Sound On";
+        icon.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(
+            $"Assets/GUIPackCartoon/Demo/Sprites/Icons/Icons White/Media/{asset}.png");
+        icon.preserveAspect = true;
+        icon.raycastTarget = false;
+        Label("Label", row, font, caption, new Vector2(-112, 0), new Vector2(240, 72), 33)
+            .alignment = TextAlignmentOptions.MidlineLeft;
+        RectTransform trackRect = Rect("Track", row, new Vector2(225, 0), new Vector2(126, 58));
+        var track = trackRect.gameObject.AddComponent<RoundedPanelGraphic>();
+        var thumb = Rect("Thumb", trackRect, Vector2.zero, new Vector2(45, 45)).gameObject.AddComponent<RoundedPanelGraphic>();
+        thumb.SetStyle(Color.white, new Color32(208, 221, 255, 255), 23);
+        thumb.raycastTarget = false;
+        Toggle toggle = row.gameObject.AddComponent<Toggle>();
+        toggle.targetGraphic = track;
+        toggle.transition = Selectable.Transition.None;
+        return toggle;
     }
 
     private static RectTransform Rect(string name, Transform parent, Vector2 position, Vector2 size)
@@ -104,13 +188,25 @@ public static class GameplayPlanningSetup
         return rect;
     }
 
-    private static Button OfferButton(string name, Transform parent, Sprite frame, TMP_FontAsset font,
-        Vector2 position, string caption, out TMP_Text label)
+    private static Button OfferButton(string name, Transform parent, TMP_FontAsset font,
+        float y, string caption, string description, int price)
     {
-        RectTransform rect = Rect(name, parent, position, new Vector2(700, 125));
-        Image image = rect.gameObject.AddComponent<Image>(); image.sprite = frame;
-        Button button = rect.gameObject.AddComponent<Button>(); button.targetGraphic = image;
-        label = Label("Label", rect, font, caption, Vector2.zero, new Vector2(660, 100), 34);
+        RectTransform rect = Rect(name, parent, new Vector2(0, y), new Vector2(740, 130));
+        var surface = rect.gameObject.AddComponent<RoundedPanelGraphic>();
+        surface.SetStyle(new Color32(57, 43, 130, 255), new Color32(119, 148, 230, 255), 28);
+        Button button = rect.gameObject.AddComponent<Button>();
+        button.targetGraphic = surface;
+        Label("Label", rect, font, caption, new Vector2(-100, 23), new Vector2(446, 48), 36)
+            .alignment = TextAlignmentOptions.MidlineLeft;
+        var detail = Label("Description", rect, font, description, new Vector2(-100, -25), new Vector2(446, 42), 27);
+        detail.alignment = TextAlignmentOptions.MidlineLeft;
+        detail.color = new Color32(184, 190, 227, 255);
+        RectTransform badge = Rect("Price", rect, new Vector2(233, 0), new Vector2(202, 72));
+        var badgeSurface = badge.gameObject.AddComponent<RoundedPanelGraphic>();
+        badgeSurface.SetStyle(new Color32(39, 28, 74, 255), new Color32(179, 136, 96, 255), 22);
+        badgeSurface.raycastTarget = false;
+        Label("PriceLabel", badge, font, price + " COIN", Vector2.zero, new Vector2(178, 58), 28)
+            .color = new Color32(255, 218, 143, 255);
         return button;
     }
 

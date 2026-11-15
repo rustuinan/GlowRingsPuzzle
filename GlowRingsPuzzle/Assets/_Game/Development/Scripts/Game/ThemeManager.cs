@@ -17,6 +17,9 @@ public class ThemeManager : MonoBehaviour
 
     [Header("Runtime")]
     [SerializeField] private ThemeData currentTheme;
+    public ThemeData[] Themes => themes;
+    private void OnDestroy() { if (Instance == this) Instance = null; }
+    private void Start() { if (currentTheme != null) ApplyTheme(currentTheme); }
 
     public ThemeData CurrentTheme
     {
@@ -35,14 +38,14 @@ public class ThemeManager : MonoBehaviour
 
         FindMissingReferences();
 
-        if (!HasRequiredStartTheme())
+        var original = CosmeticsSave.MenuTheme;
+        if (original == null || !original.IsValid())
         {
-            Debug.LogError("ThemeManager: RequiredScore = 0 olan bir ThemeData yok. Oyun başlatılmamalı.");
+            Debug.LogError("ThemeManager: Original theme is missing or invalid.", this);
             enabled = false;
             return;
         }
-
-        UpdateThemeByScore(0);
+        ApplyTheme(original);
     }
 
     private void FindMissingReferences()
@@ -51,84 +54,6 @@ public class ThemeManager : MonoBehaviour
         {
             boardVisualAutoFit = FindObjectOfType<BoardVisualAutoFit>();
         }
-    }
-
-    public void UpdateThemeByScore(int score)
-    {
-        ThemeData bestTheme = GetThemeForScore(score);
-
-        if (bestTheme == null)
-        {
-            Debug.LogError("ThemeManager: Score için uygun theme bulunamadı. Score: " + score);
-            return;
-        }
-
-        if (currentTheme == bestTheme)
-        {
-            return;
-        }
-
-        ApplyTheme(bestTheme);
-    }
-
-    private ThemeData GetThemeForScore(int score)
-    {
-        if (themes == null || themes.Length == 0)
-        {
-            return null;
-        }
-
-        ThemeData bestTheme = null;
-        int bestRequiredScore = int.MinValue;
-
-        for (int i = 0; i < themes.Length; i++)
-        {
-            ThemeData theme = themes[i];
-
-            if (theme == null)
-            {
-                continue;
-            }
-
-            if (!theme.IsValid())
-            {
-                Debug.LogWarning("ThemeManager: Geçersiz ThemeData bulundu: " + theme.name);
-                continue;
-            }
-
-            if (theme.RequiredScore <= score && theme.RequiredScore >= bestRequiredScore)
-            {
-                bestTheme = theme;
-                bestRequiredScore = theme.RequiredScore;
-            }
-        }
-
-        return bestTheme;
-    }
-
-    private bool HasRequiredStartTheme()
-    {
-        if (themes == null || themes.Length == 0)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < themes.Length; i++)
-        {
-            ThemeData theme = themes[i];
-
-            if (theme == null)
-            {
-                continue;
-            }
-
-            if (theme.RequiredScore == 0)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void ApplyTheme(ThemeData theme)
@@ -143,6 +68,7 @@ public class ThemeManager : MonoBehaviour
         ApplyBoardMaterial(theme.BoardMaterial);
         ApplyCellMaterial(theme.CellMaterial);
         ApplyBackgroundMaterial(theme.BackgroundMaterial);
+        ThemeScenePalette.Apply(gameObject.scene, theme);
 
         if (ThemeChanged != null)
         {

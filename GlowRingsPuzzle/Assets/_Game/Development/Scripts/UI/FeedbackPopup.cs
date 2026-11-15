@@ -60,7 +60,7 @@ public class FeedbackPopup : MonoBehaviour
             return;
         }
 
-        popupText.text = text;
+        popupText.text = GameLanguage.Text(text);
         popupText.color = color;
         popupText.fontSize = fontSize;
 

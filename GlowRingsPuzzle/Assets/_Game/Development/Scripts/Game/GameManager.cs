@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameOverPanelUI gameOverPanelUI;
 
     [Header("Trash")]
-    [SerializeField] private int startingTrashCount = 3;
     [SerializeField] private TMP_Text trashCountText;
     [SerializeField] private Button trashButton;
 
@@ -48,20 +47,26 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int allClearBonus = 750;
 
     [Header("Cell Bomb")]
-    [Min(0)] [SerializeField] private int startingBombCount = 2;
-    private int currentBombCount;
     private bool bombTargeting;
     private DragAndDrop dragAndDrop;
-    public int CurrentBombCount => currentBombCount;
     public bool IsBombTargeting => bombTargeting;
     public bool HasBlockedPiece { get; private set; }
     public bool IsBoosterOfferOpen { get; private set; }
     private bool boosterRescueSelected;
     public BoardManager Board => boardManager;
     public bool IsTutorialActive => IsTutorialBlockingInput();
+    private bool countedRun;
+    private MovePuzzle puzzle;
+    private MovePuzzleUI puzzleUI;
+    public bool IsPuzzle => puzzle != null;
     public bool IsPieceInteracting => dragAndDrop != null && dragAndDrop.IsInteracting;
-    public bool CanUseBomb => !isGameOver && !IsResolving && !IsBoosterOfferOpen && !IsTutorialBlockingInput() &&
-        !IsPieceInteracting && currentBombCount > 0 && boardManager != null && !boardManager.IsBoardEmpty();
+    public const int ChangePiecePrice = 100;
+    public const int BombPrice = 200;
+    public bool CanAffordChangePiece => CosmeticsSave.Coins >= ChangePiecePrice;
+    public bool CanAffordBomb => CosmeticsSave.Coins >= BombPrice;
+
+    public bool CanUseBomb => !IsPuzzle && !isGameOver && !IsResolving && !IsBoosterOfferOpen && !IsTutorialBlockingInput() &&
+        !IsPieceInteracting && CanAffordBomb && boardManager != null && !boardManager.IsBoardEmpty();
     public int ComboPreparationMovesRemaining => comboChain.PreparationMovesRemaining;
 
     [Header("Game State")]
@@ -73,7 +78,6 @@ public class GameManager : MonoBehaviour
     private bool hasUsedExtraLife;
     private bool reviveRequestPending;
     private readonly ComboChain comboChain = new ComboChain();
-    private int currentTrashCount;
 
     public bool IsResolving
     {
@@ -90,19 +94,9 @@ public class GameManager : MonoBehaviour
         get { return comboChain.Multiplier; }
     }
 
-    public int CurrentTrashCount
-    {
-        get { return currentTrashCount; }
-    }
-
-    public int StartingTrashCount
-    {
-        get { return startingTrashCount; }
-    }
-
     public bool CanOfferExtraLife
     {
-        get { return isGameOver && !hasUsedExtraLife && !reviveRequestPending; }
+        get { return !IsPuzzle && isGameOver && !hasUsedExtraLife && !reviveRequestPending; }
     }
 
     public bool IsExtraLifeRequestPending
@@ -119,6 +113,7 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+        puzzle = MovePuzzle.Take();
         FindMissingReferences();
     }
 
@@ -222,10 +217,10 @@ public class GameManager : MonoBehaviour
         isResolving = false;
         isTrashAnimating = false;
         isGameOver = false;
+        countedRun = false;
         hasUsedExtraLife = false;
         reviveRequestPending = false;
         comboChain.Reset();
-        currentBombCount = Mathf.Max(0, startingBombCount);
         bombTargeting = false;
         HasBlockedPiece = false;
         IsBoosterOfferOpen = false;
@@ -236,17 +231,12 @@ public class GameManager : MonoBehaviour
             gameOverPanelUI.HideImmediate();
         }
 
-        ResetTrashCount();
 
         if (ScoreManager.Instance != null)
         {
             ScoreManager.Instance.ResetScore();
         }
 
-        if (ThemeManager.Instance != null)
-        {
-            ThemeManager.Instance.UpdateThemeByScore(0);
-        }
 
         SafeClearBoard();
 
@@ -254,6 +244,18 @@ public class GameManager : MonoBehaviour
         {
             pieceSpawner.ClearCurrentPiece();
             pieceSpawner.ResetBalance();
+        }
+
+        if (IsPuzzle)
+        {
+            if (puzzleUI == null)
+            {
+                if (trashButton != null) trashButton.gameObject.SetActive(false);
+                puzzleUI = ScoreManager.Instance.CreatePuzzleUI();
+            }
+            puzzle.Reset(boardManager, pieceSpawner);
+            AdvancePuzzle();
+            return;
         }
 
         if (!IsTutorialBlockingInput())
@@ -334,13 +336,21 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        StartCoroutine(ResolveMatchesRoutine());
+        bool trackProgress = !IsPuzzle && !IsTutorialBlockingInput();
+        if (trackProgress)
+        {
+            PlayerProgressSave.RecordPlacement(!countedRun);
+            countedRun = true;
+            DailyTasksSave.Record(1, 0, 0, System.DateTime.Now);
+        }
+        StartCoroutine(ResolveMatchesRoutine(trackProgress));
     }
 
-    private IEnumerator ResolveMatchesRoutine()
+    private IEnumerator ResolveMatchesRoutine(bool trackProgress)
     {
         isResolving = true;
         RefreshTrashUI();
+        int clearedRingCount = 0;
 
         List<MatchData> matches = boardManager.FindMatches();
         comboChain.RegisterMove(matches != null && matches.Count > 0);
@@ -352,6 +362,7 @@ public class GameManager : MonoBehaviour
 
         if (matches != null && matches.Count > 0)
         {
+            GameplayHaptics.Play();
             if (AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlayMatch();
@@ -362,7 +373,7 @@ public class GameManager : MonoBehaviour
                 yield return matchEffectManager.PlayMatches(matches);
             }
 
-            int clearedRingCount = boardManager.ClearMatches(matches);
+            clearedRingCount = boardManager.ClearMatches(matches);
 
             int baseScore = clearedRingCount * pointsPerClearedRing;
             int comboScore = baseScore * ComboCount;
@@ -380,9 +391,14 @@ public class GameManager : MonoBehaviour
                 totalScore += allClearBonus;
             }
 
-            if (ScoreManager.Instance != null)
+            if (!IsPuzzle && ScoreManager.Instance != null)
             {
                 ScoreManager.Instance.AddScore(totalScore);
+            }
+            if (trackProgress)
+            {
+                PlayerProgressSave.RecordMatch(clearedRingCount, totalScore, ComboCount, matches.Count, isAllClear);
+                DailyTasksSave.Record(0, clearedRingCount, totalScore, System.DateTime.Now);
             }
 
             if (gameplayFeedbackManager != null)
@@ -392,13 +408,17 @@ public class GameManager : MonoBehaviour
                     matches.Count,
                     clearedRingCount,
                     isAllClear,
-                    totalScore
+                    IsPuzzle ? 0 : totalScore
                 );
             }
         }
-        if (ThemeManager.Instance != null && ScoreManager.Instance != null)
+
+        if (IsPuzzle)
         {
-            ThemeManager.Instance.UpdateThemeByScore(ScoreManager.Instance.Score);
+            puzzle.Record(clearedRingCount);
+            isResolving = false;
+            AdvancePuzzle();
+            yield break;
         }
 
         if (!isGameOver && !IsTutorialBlockingInput())
@@ -415,8 +435,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void AdvancePuzzle()
+    {
+        bool won = puzzle.Cleared >= puzzle.Target;
+        bool canContinue = !won && puzzle.Spawn(pieceSpawner) && boardManager.HasMove(pieceSpawner.CurrentPiece);
+        isGameOver = !canContinue;
+        puzzleUI.UpdateProgress(puzzle);
+        if (canContinue) return;
+        pieceSpawner.ClearCurrentPiece();
+        puzzleUI.ShowResult(won, RestartGame, ReturnFromPuzzle);
+    }
+
+    private static void ReturnFromPuzzle()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync("Assets/_Game/Development/Scene/MainMenu.unity");
+    }
+
     public void TrashCurrentPiece()
     {
+        if (IsPuzzle) return;
         if (IsBoosterOfferOpen) return;
         if (bombTargeting || IsPieceInteracting) return;
         if (IsTutorialBlockingInput())
@@ -435,13 +472,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (currentTrashCount <= 0)
-        {
-            RefreshTrashUI();
-            Debug.Log("GameManager: Trash hakkı kalmadı.");
-            return;
-        }
-
         if (pieceSpawner == null)
         {
             Debug.LogWarning("GameManager: PieceSpawner yok, trash işlemi yapılamadı.");
@@ -454,6 +484,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (!CosmeticsSave.TrySpendCoins(ChangePiecePrice)) return;
+        PlayerProgressSave.RecordBooster(false);
         StartCoroutine(TrashCurrentPieceRoutine());
     }
 
@@ -461,7 +493,6 @@ public class GameManager : MonoBehaviour
     {
         isTrashAnimating = true;
 
-        currentTrashCount--;
         RefreshTrashUI();
 
         if (AudioManager.Instance != null)
@@ -552,17 +583,11 @@ public class GameManager : MonoBehaviour
         TrashCurrentPiece();
     }
 
-    private void ResetTrashCount()
-    {
-        currentTrashCount = Mathf.Max(0, startingTrashCount);
-        RefreshTrashUI();
-    }
-
     public void RefreshTrashUI()
     {
         if (trashCountText != null)
         {
-            trashCountText.text = currentTrashCount.ToString();
+            trashCountText.text = ChangePiecePrice + "\n<size=55%>COIN</size>";
         }
 
         if (trashButton != null)
@@ -576,7 +601,7 @@ public class GameManager : MonoBehaviour
                 !IsBoosterOfferOpen &&
                 !bombTargeting &&
                 !IsPieceInteracting &&
-                currentTrashCount > 0;
+                CanAffordChangePiece;
         }
     }
 
@@ -608,14 +633,14 @@ public class GameManager : MonoBehaviour
         bool hasMove = boardManager.HasMove(currentPiece);
         HasBlockedPiece = !hasMove;
 
-        bool hasBombRescue = currentBombCount > 0 && !boardManager.IsBoardEmpty();
+        bool hasBombRescue = CanAffordBomb && !boardManager.IsBoardEmpty();
         if (hasMove)
         {
             IsBoosterOfferOpen = false;
             boosterRescueSelected = false;
             RefreshTrashUI();
         }
-        else if (currentTrashCount <= 0 && !hasBombRescue)
+        else if (!CanAffordChangePiece && !hasBombRescue)
         {
             GameOver();
         }
@@ -680,7 +705,7 @@ public class GameManager : MonoBehaviour
 
     public void AcceptBombRescue()
     {
-        if (!IsBoosterOfferOpen || currentBombCount <= 0 || IsResolving || isGameOver) return;
+        if (!IsBoosterOfferOpen || !CanAffordBomb || IsResolving || isGameOver) return;
         IsBoosterOfferOpen = false;
         boosterRescueSelected = true;
         ToggleBombTargeting();
@@ -693,7 +718,7 @@ public class GameManager : MonoBehaviour
 
     public void AcceptDiscardRescue()
     {
-        if (!IsBoosterOfferOpen || currentTrashCount <= 0 || IsResolving || isGameOver) return;
+        if (!IsBoosterOfferOpen || !CanAffordChangePiece || IsResolving || isGameOver) return;
         IsBoosterOfferOpen = false;
         // A replacement can also be blocked, so check it and offer a fresh choice afterwards.
         boosterRescueSelected = false;
@@ -712,8 +737,9 @@ public class GameManager : MonoBehaviour
             System.Array.IndexOf(boardManager.Cells, cell) < 0 || cell.GetAllRings().Length == 0)
             return false;
 
+        if (!CosmeticsSave.TrySpendCoins(BombPrice)) return false;
+        PlayerProgressSave.RecordBooster(true);
         bombTargeting = false;
-        currentBombCount--;
         comboChain.Reset();
         StartCoroutine(BombCellRoutine(cell));
         return true;
@@ -723,6 +749,7 @@ public class GameManager : MonoBehaviour
     {
         isResolving = true;
         RefreshTrashUI();
+        GameplayHaptics.Play();
         if (AudioManager.Instance != null) AudioManager.Instance.PlayTrash();
         foreach (Ring ring in cell.GetAllRings())
         {

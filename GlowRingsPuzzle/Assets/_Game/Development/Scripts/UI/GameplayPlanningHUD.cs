@@ -33,8 +33,9 @@ public class GameplayPlanningHUD : MonoBehaviour
     {
         if (game == null || spawner == null) return;
         bool tutorial = game.IsTutorialActive;
+        if (game.IsPuzzle && bombButton.gameObject.activeSelf) bombButton.gameObject.SetActive(false);
         bombButton.interactable = game.IsBombTargeting || game.CanUseBomb;
-        bombCount.text = game.CurrentBombCount.ToString();
+        bombCount.text = GameManager.BombPrice + "\n<size=55%>COIN</size>";
         targets.gameObject.SetActive(game.IsBombTargeting);
         boosterOffer.gameObject.SetActive(game.IsBoosterOfferOpen);
         bool showPreview = !tutorial && !game.IsGameOver && !game.IsBoosterOfferOpen && spawner.NextPieceData != null;
@@ -42,7 +43,7 @@ public class GameplayPlanningHUD : MonoBehaviour
         preview.Show(showPreview ? spawner.NextPieceData : null, spawner.NextPieceColor);
         if (game.IsBombTargeting)
         {
-            instruction.text = "TAP A CELL TO CLEAR\nTap bomb again to cancel";
+            instruction.text = GameLanguage.Text("TAP A CELL TO CLEAR\nTap bomb again to cancel");
             instruction.color = new Color32(255, 225, 126, 255);
         }
         else instruction.text = "";

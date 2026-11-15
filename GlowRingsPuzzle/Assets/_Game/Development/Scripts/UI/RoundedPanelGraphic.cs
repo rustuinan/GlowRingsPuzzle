@@ -6,8 +6,12 @@ public class RoundedPanelGraphic : MaskableGraphic
 {
     [SerializeField] private Color borderColor = new Color32(128, 113, 255, 255);
     [SerializeField] private float cornerRadius = 48f;
+    public Color BorderColor => borderColor;
+    public float CornerRadius => cornerRadius;
     public void SetStyle(Color fill, Color border, float radius = 32f)
     { color = fill; borderColor = border; cornerRadius = radius; SetVerticesDirty(); }
+    public void ApplyPalette(Color fill, Color border)
+    { fill.a = color.a; color = fill; borderColor = border; SetVerticesDirty(); }
     protected override void OnPopulateMesh(VertexHelper mesh)
     {
         mesh.Clear();

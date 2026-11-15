@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5832868650572f547986d5270bdac650, type: 3}
+  m_Name: Theme_midnight
+  m_EditorClassIdentifier: 
+  Id: midnight
+  CoinPrice: 500
+  IsOriginal: 0
+  BoardSurfaceMaterials:
+  - {fileID: 2100000, guid: 5c9a432734d43d146a918ad8bedc5137, type: 2}
+  - {fileID: 2100000, guid: a5675d7cc7a47294d9d63559f51bc024, type: 2}
+  - {fileID: 2100000, guid: 8c2f9d7e3fbcf264aaa23cdb51164339, type: 2}
+  - {fileID: 2100000, guid: 541835acd78d21b4eb8765d92afce138, type: 2}
+  BackgroundTop: {r: 0.13333334, g: 0.16862746, b: 0.38431373, a: 1}
+  BackgroundBottom: {r: 0.3372549, g: 0.38431373, b: 0.6117647, a: 1}
+  Surface: {r: 0.14509805, g: 0.1882353, b: 0.35686275, a: 1}
+  Accent: {r: 0.7882353, g: 0.84313726, b: 1, a: 1}
+  Secondary: {r: 0.6666667, g: 0.74509805, b: 1, a: 1}
+  Text: {r: 0.972549, g: 0.95686275, b: 1, a: 1}
+  BoardFace: {r: 0.7137255, g: 0.8, b: 0.8745098, a: 1}
+  BoardFrame: {r: 0.14509805, g: 0.23529412, b: 0.3764706, a: 1}
+  BoardGap: {r: 0.055137258, g: 0.089411765, b: 0.14305882, a: 1}
+  Atmosphere: 0
+  themeName: Celestial
+  requiredScore: 0
+  ringModelData: {fileID: 11400000, guid: aec260652a42dd64084ad59cd97bd633, type: 2}
+  ringColors:
+  - {fileID: 11400000, guid: 936b16e11b7790e4c894af8d264dd03d, type: 2}
+  - {fileID: 11400000, guid: c9a64f80249917648a69a0f538ca90f1, type: 2}
+  - {fileID: 11400000, guid: 2920108ec1ba6424981e6278ce94e78d, type: 2}
+  - {fileID: 11400000, guid: 9de966b87fc41bd438724a6a19fdce00, type: 2}
+  - {fileID: 11400000, guid: 072333cd569ed6c44891b264c6fcd17d, type: 2}
+  - {fileID: 11400000, guid: ad73b1759c1b9ca47bd440e0c1c17efd, type: 2}
+  boardMaterial: {fileID: 0}
+  cellMaterial: {fileID: 0}
+  backgroundMaterial: {fileID: 0}

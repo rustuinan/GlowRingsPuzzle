@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5832868650572f547986d5270bdac650, type: 3}
+  m_Name: Theme_forest
+  m_EditorClassIdentifier: 
+  Id: forest
+  CoinPrice: 1600
+  IsOriginal: 0
+  BoardSurfaceMaterials:
+  - {fileID: 2100000, guid: 33d00cd60a0ddc448bcb0d236497f1bc, type: 2}
+  - {fileID: 2100000, guid: 34f98e934e337d641a68d4d3ce747346, type: 2}
+  - {fileID: 2100000, guid: 7e9b3365153321f4694c28dfd941d046, type: 2}
+  - {fileID: 2100000, guid: 1a8ec03dd3d365b4789ad8f483e2f80e, type: 2}
+  BackgroundTop: {r: 0.15686275, g: 0.3372549, b: 0.30588236, a: 1}
+  BackgroundBottom: {r: 0.5686275, g: 0.7019608, b: 0.6039216, a: 1}
+  Surface: {r: 0.09411765, g: 0.23921569, b: 0.20784314, a: 1}
+  Accent: {r: 0.7764706, g: 0.92156863, b: 0.67058825, a: 1}
+  Secondary: {r: 0.6627451, g: 0.8980392, b: 0.8156863, a: 1}
+  Text: {r: 0.972549, g: 0.95686275, b: 1, a: 1}
+  BoardFace: {r: 0.77254903, g: 0.8509804, b: 0.79607844, a: 1}
+  BoardFrame: {r: 0.21176471, g: 0.36078432, b: 0.31764707, a: 1}
+  BoardGap: {r: 0.08047059, g: 0.13709804, b: 0.12070589, a: 1}
+  Atmosphere: 0
+  themeName: Jade Garden
+  requiredScore: 3000
+  ringModelData: {fileID: 11400000, guid: aec260652a42dd64084ad59cd97bd633, type: 2}
+  ringColors:
+  - {fileID: 11400000, guid: 1f00269b7d6cda54fa9bf6cd82f18a5f, type: 2}
+  - {fileID: 11400000, guid: a31671c9666c93846810ff1f129a3f1e, type: 2}
+  - {fileID: 11400000, guid: 23b49e711aff4c84ea323fab9a57bc86, type: 2}
+  - {fileID: 11400000, guid: c8da68ff1ea0f7c489ada4400a2443dc, type: 2}
+  - {fileID: 11400000, guid: f4c7dd0ded18a444fa23b36147c2c1b8, type: 2}
+  - {fileID: 11400000, guid: ef78fa6bb8d7b2447bca76549d3c7eb9, type: 2}
+  boardMaterial: {fileID: 0}
+  cellMaterial: {fileID: 0}
+  backgroundMaterial: {fileID: 0}

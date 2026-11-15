@@ -182,6 +182,9 @@ public class FirstMoveTutorialManager : MonoBehaviour
 
     private void Start()
     {
+        if (GameManager.Instance != null && GameManager.Instance.IsPuzzle)
+            isTutorialActive = false;
+
         if (isTutorialActive)
         {
             if (GameManager.Instance != null)

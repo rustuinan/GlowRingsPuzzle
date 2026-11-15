@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum MenuPage { Settings = 0, Statistics = 1, Wallet = 2, Shop = 4, DailyReward = 5, DailySpin = 6, PuzzleMode = 7 }
+public enum MenuPage { Settings = 0, Statistics = 1, Wallet = 2, Shop = 4, DailyReward = 5, DailySpin = 6, PuzzleMode = 7, DailyTasks = 8 }
 
 [RequireComponent(typeof(Button))]
 public class MenuActionButton : MonoBehaviour

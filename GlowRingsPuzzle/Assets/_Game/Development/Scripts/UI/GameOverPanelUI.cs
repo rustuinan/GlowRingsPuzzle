@@ -370,7 +370,7 @@ public class GameOverPanelUI : MonoBehaviour
 
         if (extraLifeButtonLabel != null)
         {
-            extraLifeButtonLabel.text = ready ? "EKSTRA CAN" : "YÜKLENİYOR";
+            extraLifeButtonLabel.text = ready ? GameLanguage.Choose("EXTRA LIFE", "EKSTRA CAN") : GameLanguage.Choose("LOADING", "YÜKLENİYOR");
         }
     }
 

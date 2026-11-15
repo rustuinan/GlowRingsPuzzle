@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f35737063dd6aa4ea3e152926a3431d, type: 3}
+  m_Name: CoinShopConfig
+  m_EditorClassIdentifier: 
+  UIFont: {fileID: 11400000, guid: f13fe866ecfdf444296dbf6d76a3edf8, type: 2}
+  BodyFont: {fileID: 11400000, guid: f13fe866ecfdf444296dbf6d76a3edf8, type: 2}
+  CoinIcon: {fileID: 21300000, guid: 407afb697ff434432bb8ecb2742d0545, type: 3}
+  NoAdsProductId: remove_ads
+  NoAdsIcon: {fileID: 21300000, guid: eef1f74a17cb744d0b68b672436fa959, type: 3}
+  Packs:
+  - ProductId: coins_2000
+    Title: "COIN KESES\u0130"
+    Coins: 2000
+    Icon: {fileID: 21300000, guid: 88eada9b9f9a6476eb3798f54e8d562a, type: 3}
+  - ProductId: coins_6000
+    Title: "COIN \xC7ANTASI"
+    Coins: 6000
+    Icon: {fileID: 21300000, guid: 583f02b89cabe4bb8950b242bfabec48, type: 3}
+  - ProductId: coins_15000
+    Title: "COIN SANDI\u011EI"
+    Coins: 15000
+    Icon: {fileID: 21300000, guid: 601f890e5856d402aaf6134937d55250, type: 3}

@@ -1,21 +1,16 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Explicit, optional rescue choice. Showing or dismissing it never spends inventory.</summary>
+/// <summary>Explicit, optional rescue choice. Showing or dismissing it never spends coins.</summary>
 public class BoosterOfferPanelUI : MonoBehaviour
 {
     [SerializeField] private GameManager game;
     [SerializeField] private Button bombButton;
     [SerializeField] private Button discardButton;
     [SerializeField] private Button endButton;
-    [SerializeField] private TMP_Text bombLabel;
-    [SerializeField] private TMP_Text discardLabel;
-
-    public void Configure(GameManager manager, Button bomb, Button discard, Button end, TMP_Text bombText, TMP_Text discardText)
+    public void Configure(GameManager manager, Button bomb, Button discard, Button end)
     {
         game = manager; bombButton = bomb; discardButton = discard; endButton = end;
-        bombLabel = bombText; discardLabel = discardText;
     }
 
     private void OnEnable()
@@ -38,10 +33,8 @@ public class BoosterOfferPanelUI : MonoBehaviour
     private void Refresh()
     {
         if (game == null) return;
-        bombButton.gameObject.SetActive(game.CurrentBombCount > 0);
-        discardButton.gameObject.SetActive(game.CurrentTrashCount > 0);
-        bombLabel.text = "USE CELL BOMB  (" + game.CurrentBombCount + ")";
-        discardLabel.text = "CHANGE PIECE  (" + game.CurrentTrashCount + ")";
+        bombButton.interactable = game.CanAffordBomb;
+        discardButton.interactable = game.CanAffordChangePiece;
     }
     private void UseBomb() { game.AcceptBombRescue(); }
     private void UseDiscard() { game.AcceptDiscardRescue(); }

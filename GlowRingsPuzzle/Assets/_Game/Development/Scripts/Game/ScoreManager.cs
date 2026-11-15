@@ -48,6 +48,14 @@ public class ScoreManager : MonoBehaviour
         return score;
     }
 
+    internal MovePuzzleUI CreatePuzzleUI()
+    {
+        var frame = scoreText.GetComponentInParent<ReferenceFrameFit>().transform;
+        scoreText.transform.parent.gameObject.SetActive(false);
+        highScoreText.transform.parent.gameObject.SetActive(false);
+        return MovePuzzleUI.Create(frame, scoreText.font);
+    }
+
     private void UpdateUI()
     {
         if (scoreText != null)

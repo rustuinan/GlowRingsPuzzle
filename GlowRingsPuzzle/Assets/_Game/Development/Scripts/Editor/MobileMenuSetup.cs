@@ -64,13 +64,12 @@ public static class MobileMenuSetup
         wallet.targetGraphic = walletGraphic;
         Action(wallet, MenuPage.Wallet);
         Icon("Coin", walletSurface, "Icons Colored/Coins/Coin.png", new Vector2(-116, 0), 60);
-        Text("CoinsTitle", walletSurface, "COINS", new Vector2(-28, 22), new Vector2(135, 36), 25);
-        Text("CoinsValue", walletSurface, "SOON", new Vector2(-28, -19), new Vector2(135, 38), 28, new Color32(245, 213, 144, 255));
+        Text("CoinsValue", walletSurface, "", new Vector2(-15, 0), new Vector2(142, 56), 37, new Color32(245, 213, 144, 255));
         RectTransform plus = Rect("Plus Background", walletSurface, new Vector2(108, 0), new Vector2(76, 76));
         RoundedPanelGraphic plusGraphic = plus.gameObject.AddComponent<RoundedPanelGraphic>();
         plusGraphic.SetStyle(new Color32(64, 48, 116, 255), Violet, 20); plusGraphic.raycastTarget = false;
         Text("Plus", plus, "+", Vector2.zero, new Vector2(64, 64), 48, Cyan);
-        HeaderButton("Statistics", header, -164, "Icons Colored/Badges/Cup (Big).png", MenuPage.Statistics);
+        HeaderButton("Statistics", header, -156, "Icons Colored/Badges/Cup (Big).png", MenuPage.Statistics);
         HeaderButton("Settings", header, 0, "Icons White/Basic/Settings.png", MenuPage.Settings);
 
         RectTransform scrollRoot = Rect("Menu Scroll", safe, Vector2.zero, Vector2.zero); Stretch(scrollRoot);
@@ -99,13 +98,13 @@ public static class MobileMenuSetup
         bar.handleRect = handle; bar.targetGraphic = handleImage;
         scroll.verticalScrollbar = bar; scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
 
-        RectTransform brand = Item("Brand", content, 180);
-        Text("Title", brand, "RING <color=#8CEAFF>MATCH</color>", new Vector2(0, 30), new Vector2(960, 120), 108, Color.white);
-        RectTransform recordPill = Rect("Best Record", brand, new Vector2(0, -62), new Vector2(330, 66));
+        RectTransform brand = Item("Brand", content, 200);
+        Text("Title", brand, "RING <color=#8CEAFF>MATCH</color>", new Vector2(0, 20), new Vector2(960, 110), 108, Color.white);
+        RectTransform recordPill = Rect("Best Record", brand, new Vector2(0, -72), new Vector2(390, 68));
         recordPill.gameObject.AddComponent<RoundedPanelGraphic>().SetStyle(new Color32(27, 22, 66, 175), new Color32(91, 77, 147, 200), 33);
-        Icon("Cup", recordPill, "Icons Colored/Badges/Cup (Big).png", new Vector2(-118, 0), 40);
-        Text("BestLabel", recordPill, "BEST", new Vector2(-52, 0), new Vector2(90, 40), 25);
-        TMP_Text record = Text("BestValue", recordPill, SaveManager.LoadHighScore().ToString("N0"), new Vector2(65, 0), new Vector2(150, 50), 37, new Color32(255, 218, 144, 255));
+        Icon("Cup", recordPill, "Icons Colored/Badges/Cup (Big).png", new Vector2(-150, 0), 40);
+        Text("BestLabel", recordPill, "HIGH SCORE", new Vector2(-39, 0), new Vector2(170, 40), 25);
+        TMP_Text record = Text("BestValue", recordPill, SaveManager.LoadHighScore().ToString("N0"), new Vector2(99, 0), new Vector2(150, 50), 37, new Color32(255, 218, 144, 255));
         RectTransform hero = Item("Hero", content, 420);
         RectTransform heroImage = Rect("Gameplay Rings", hero, Vector2.zero, new Vector2(780, 780));
         RawImage heroGraphic = heroImage.gameObject.AddComponent<RawImage>(); heroGraphic.raycastTarget = false;
@@ -120,12 +119,12 @@ public static class MobileMenuSetup
         Button puzzle = Card("Puzzle Mode", puzzleRow, new Color32(35, 38, 101, 250), new Color32(133, 154, 255, 255));
         Stretch((RectTransform)puzzle.transform); Action(puzzle, MenuPage.PuzzleMode);
         Icon("PuzzleIcon", puzzle.transform, "Icons White/Navigation/Level.png", new Vector2(-360, 0), 64);
-        Text("PuzzleTitle", puzzle.transform, "PUZZLE MODE", new Vector2(0, 20), new Vector2(670, 65), 45);
-        Text("PuzzleAvailability", puzzle.transform, "COMING SOON", new Vector2(0, -35), new Vector2(670, 40), 25, new Color32(169, 178, 231, 255));
+        Text("PuzzleTitle", puzzle.transform, "PUZZLE MODE", Vector2.zero, new Vector2(670, 65), 45);
         RectTransform activities = Row("Activities", content, 212);
         Feature("Daily Reward", activities, "DAILY\nREWARD", "Icons Colored/Gifts/Gift - Yellow (Border).png", MenuPage.DailyReward, new Color32(66, 37, 87, 245), new Color32(222, 148, 208, 255));
         Feature("Daily Spin", activities, "DAILY\nSPIN", "Icons Colored/Spin Wheel/Spin Wheel.png", MenuPage.DailySpin, new Color32(30, 54, 91, 245), new Color32(118, 195, 232, 255));
         Feature("Shop", activities, "SHOP", "Icons Colored/Commerce/Shop.png", MenuPage.Shop, new Color32(50, 43, 85, 245), new Color32(213, 179, 113, 255));
+        AddDailyTasksCard(activities);
 
         RectTransform modal = Rect("Menu Dialog", safe, Vector2.zero, Vector2.zero); Stretch(modal);
         Image shade = modal.gameObject.AddComponent<Image>(); shade.color = new Color(0.015f, 0.008f, 0.05f, 0.9f);
@@ -141,7 +140,6 @@ public static class MobileMenuSetup
         RectTransform settings = Rect("Audio Settings", card, new Vector2(0, -10), new Vector2(780, 540));
         Button music = AudioRow("Music", settings, 135, "MUSIC", "Icons White/Media/Music - Note.png", out TMP_Text musicValue);
         Button sound = AudioRow("Sound", settings, -35, "SOUND", "Icons White/Media/Sound.png", out TMP_Text soundValue);
-        Text("Note", settings, "More options coming soon", new Vector2(0, -210), new Vector2(760, 70), 28, new Color32(178, 167, 216, 255));
         controller.Configure(play, modal.gameObject, modalTitle, body, record, settings.gameObject, close, music, sound, musicValue, soundValue);
         modal.gameObject.SetActive(false);
         EditorUtility.SetDirty(controller);
@@ -211,13 +209,44 @@ public static class MobileMenuSetup
         Text("Title", rect, caption, new Vector2(-65, 0), new Vector2(320, 80), 40);
         value = Text("Value", rect, "ON", new Vector2(285, 0), new Vector2(160, 80), 40, Cyan); return button;
     }
+    public static void InstallDailyTasksCard()
+    {
+        Scene scene = SceneManager.GetActiveScene();
+        if (EditorApplication.isPlaying || scene.path != MenuScene)
+            throw new InvalidOperationException("Open MainMenu in Edit Mode.");
+        controller = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<MainMenuUI>(true)).Single();
+        var row = controller.transform.Find("Safe Area/Menu Scroll/Viewport/Content/Activities");
+        font = row.Find("Daily Reward/Title").GetComponent<TMP_Text>().font;
+        AddDailyTasksCard(row);
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+    }
+
+    private static void AddDailyTasksCard(Transform row)
+    {
+        if (row.Find("Daily Tasks") == null)
+        {
+            Feature("Daily Tasks", row, "DAILY\nTASKS", "Icons White/Navigation/List.png",
+                MenuPage.DailyTasks, new Color32(36, 56, 90, 245), Cyan);
+            row.Find("Daily Tasks").SetSiblingIndex(row.Find("Shop").GetSiblingIndex());
+        }
+        foreach (Transform card in row)
+        {
+            var title = (RectTransform)card.Find("Title");
+            title.sizeDelta = new Vector2(204, 86);
+            var badge = (RectTransform)card.Find("Availability");
+            badge.sizeDelta = new Vector2(82, 30);
+            badge.anchoredPosition = new Vector2(60, 78);
+        }
+    }
+
     private static void Feature(string name, Transform parent, string caption, string icon, MenuPage page, Color fill, Color border)
     {
         Button button = Card(name, parent, fill, border); LayoutElement le = button.gameObject.AddComponent<LayoutElement>(); le.flexibleWidth = 1; le.minWidth = 0;
         RectTransform rect = (RectTransform)button.transform;
         Icon("Icon", rect, icon, new Vector2(0, 45), 82);
         Text("Title", rect, caption, new Vector2(0, -50), new Vector2(275, 86), 34);
-        Text("Availability", rect, "SOON", new Vector2(92, 78), new Vector2(105, 30), 21, border);
+        Text("Availability", rect, page == MenuPage.DailySpin ? "FREE" : page == MenuPage.DailyReward ? "CLAIM" : "", new Vector2(92, 78), new Vector2(105, 30), 21, border);
         Action(button, page);
     }
     private static void Action(Button button, MenuPage page) { button.gameObject.AddComponent<MenuActionButton>().Configure(controller, page); }

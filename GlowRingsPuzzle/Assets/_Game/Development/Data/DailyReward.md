@@ -1,0 +1,11 @@
+# Daily Reward
+
+The MainMenu opens the reward popup when a daily gift is available. The Daily Reward activity also opens it, with CLAIM / DONE availability. Rewards are claimed explicitly through the button and credited to the shared cosmetics wallet. The compact purple/gold popup follows a seven-card layout: six days in a 3-by-2 grid and a wide seventh-day card. Today's card is highlighted, collected days are marked, and the claim button shows the exact amount. The back button is separate, with a live midnight countdown below it. Completed-day progress is cumulative, rather than a consecutive-day streak. After day seven the grid shows days 8-14, preserving the increasing reward schedule; the wide card has no extra payout beyond its displayed amount. Coin-flight/confetti feedback plays on collection.
+
+`Assets/_Game/Resources/DailyRewardConfig.asset` controls the first-day reward (100), additional coins per claimed day (50), coin art and reward audio. Amounts increase past day seven. Missing a day preserves progress; it does not grant missed days or reset the next reward. Only one reward may be claimed on each local calendar date, with the next reward available at local midnight. Clock rollback does not unlock an earlier date. This local prototype uses device time and PlayerPrefs.
+
+`GlowRings.DailyReward.State` persists claim count, last claim date/reward and an interrupted claim's receipt, date and exact amount. The wallet's reward journal grants each receipt once. Recovery finishes a pending claim without duplicating a previously credited amount. Daily Spin's unlimited test mode does not disable Daily Reward's daily limit.
+
+The config's `UIFont` uses `DailyReward Turkish SDF`, a baked Oswald Bold atlas containing ASCII, all Turkish letters and the UI's punctuation. The inherited cartoon font lacks several Turkish glyphs and mixes fallback styles, so Daily Reward uses the dedicated font throughout with no synthetic bold. Include new characters in this atlas when adding translations.
+
+`Tools > Glow Rings > Validate Daily Reward (Edit Mode)` verifies progression, midnight, missed days, duplicate protection and interrupted payouts. `Validate Daily Reward UI (Play Mode)` checks the real menu, claim button, wallet, effects, reopening and next-day reward. Checks preserve all touched preferences.

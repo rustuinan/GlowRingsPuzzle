@@ -82,7 +82,7 @@ public class GameplayFeedbackManager : MonoBehaviour
         if (comboCount >= 2)
         {
             SpawnPopup(
-                comboCount + "x COMBO",
+                GameLanguage.Format("{0}x COMBO", "{0}x KOMBO", comboCount),
                 comboColor,
                 comboFontSize,
                 comboTextPosition,
@@ -132,7 +132,7 @@ public class GameplayFeedbackManager : MonoBehaviour
         if (comboCount >= 2)
         {
             SpawnPopup(
-                comboCount + "x COMBO",
+                GameLanguage.Format("{0}x COMBO", "{0}x KOMBO", comboCount),
                 comboColor,
                 comboFontSize,
                 comboTextPosition,
@@ -166,7 +166,7 @@ public class GameplayFeedbackManager : MonoBehaviour
 
     private string GetPraiseText(int comboCount, int matchCount, int clearedRingCount)
     {
-        if (matchCount >= 3) return matchCount + " MATCHES!";
+        if (matchCount >= 3) return GameLanguage.Format("{0} MATCHES!", "{0} EŞLEŞME!", matchCount);
         if (matchCount == 2) return "DOUBLE MATCH!";
         if (comboCount >= 5)
         {
