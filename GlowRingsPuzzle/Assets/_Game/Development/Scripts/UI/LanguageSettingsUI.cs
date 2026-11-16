@@ -94,7 +94,7 @@ public sealed class LanguageSettingsUI : MonoBehaviour, IDragHandler, IEndDragHa
     private static TMP_Text Label(Transform parent, string name, TMP_FontAsset font, Vector2 position, Vector2 size, float fontSize)
     {
         var label = Rect(name, parent, position, size).gameObject.AddComponent<TextMeshProUGUI>();
-        label.font = font;
+        label.font = GameLanguage.UiFont(font);
         label.fontSize = fontSize;
         label.fontSizeMin = fontSize * .7f;
         label.fontSizeMax = fontSize;

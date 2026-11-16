@@ -104,7 +104,7 @@ internal sealed class MovePuzzleUI : MonoBehaviour
         float width, float height, float size, Color color)
     {
         var label = Rect("Label", parent, x, y, width, height).gameObject.AddComponent<TextMeshProUGUI>();
-        label.font = font;
+        label.font = GameLanguage.UiFont(font);
         label.text = value;
         label.fontSize = size;
         label.fontSizeMin = size * .65f;

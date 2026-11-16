@@ -51,6 +51,10 @@ public static class GameLanguage
     }
 
     private static readonly Dictionary<string, string> Active = new Dictionary<string, string>();
+    private const string TurkishCharacters = "ÇĞİÖŞÜçğıöşü";
+    private static readonly char[] TurkishLetters = TurkishCharacters.ToCharArray();
+    private static TMP_FontAsset turkishUiFont;
+    private static TMP_FontAsset addedLanguageFallback;
     public static string Code { get; private set; } = "en";
     public static bool IsTurkish => Code == "tr";
     public static CultureInfo Culture { get; private set; } = CultureInfo.GetCultureInfo("en-US");
@@ -84,11 +88,13 @@ public static class GameLanguage
         Culture = CultureInfo.GetCultureInfo(locale);
         Code = Culture.TwoLetterISOLanguageName;
         Active.Clear();
+        SetLanguageFallback(null);
         if (Code == "en") return;
         if (IsTurkish)
         {
             foreach (var entry in Translations) Active.Add(entry.Key, entry.Value);
-            AddFallback(Resources.Load<TMP_FontAsset>("Shop Readable Turkish SDF"));
+            turkishUiFont = Resources.Load<TMP_FontAsset>("DailyReward Turkish SDF");
+            SetLanguageFallback(turkishUiFont);
             return;
         }
         var source = Resources.Load<TextAsset>("GameTranslations");
@@ -104,13 +110,35 @@ public static class GameLanguage
         }
         string fontPath = Code == "zh" ? "Ring Match Chinese SDF" :
             Code == "ru" ? "Ring Match Cyrillic SDF" : "Fonts & Materials/LiberationSans SDF - Fallback";
-        AddFallback(Resources.Load<TMP_FontAsset>(fontPath));
+        SetLanguageFallback(Resources.Load<TMP_FontAsset>(fontPath));
     }
 
-    private static void AddFallback(TMP_FontAsset font)
+    private static void SetLanguageFallback(TMP_FontAsset font)
     {
         var fallbacks = TMP_Settings.fallbackFontAssets;
-        if (font != null && fallbacks != null && !fallbacks.Contains(font)) fallbacks.Add(font);
+        if (fallbacks == null) return;
+        if (addedLanguageFallback != null) fallbacks.Remove(addedLanguageFallback);
+        addedLanguageFallback = null;
+        if (font == null || fallbacks.Contains(font)) return;
+        fallbacks.Add(font);
+        addedLanguageFallback = font;
+    }
+
+    internal static TMP_FontAsset UiFont(TMP_FontAsset preferred)
+    {
+        if (!IsTurkish || turkishUiFont == null) return preferred;
+        if (preferred == null) return turkishUiFont;
+        foreach (char letter in TurkishLetters)
+            if (!preferred.HasCharacter(letter)) return turkishUiFont;
+        return preferred;
+    }
+
+    internal static void ApplyUiFont(TMP_Text label)
+    {
+        var font = UiFont(label.font);
+        if (font == label.font) return;
+        label.font = font;
+        label.fontStyle &= ~FontStyles.Bold;
     }
 
     public static string Choose(string english, string turkish) => IsTurkish ? turkish : Text(english);
@@ -134,6 +162,8 @@ public static class GameLanguage
         foreach (var label in root.GetComponentsInChildren<TMP_Text>(true))
         {
             string translation = Text(label.text);
+            if (IsTurkish && (translation != label.text || translation?.IndexOfAny(TurkishLetters) >= 0))
+                ApplyUiFont(label);
             if (translation == label.text) continue;
             if (!label.enableAutoSizing)
             {

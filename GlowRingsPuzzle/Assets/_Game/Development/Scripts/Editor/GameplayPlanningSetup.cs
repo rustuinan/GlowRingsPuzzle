@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public static class GameplayPlanningSetup
 {
+    private const string BoosterIconPath = "Assets/_Game/Art/InterfaceIcons/";
+
     [MenuItem("Tools/Glow Rings/Install Planning HUD")]
     public static void Install()
     {
@@ -49,8 +51,9 @@ public static class GameplayPlanningSetup
         Image badgeImage = badge.gameObject.AddComponent<Image>();
         badgeImage.sprite = boosterFrame; badgeImage.raycastTarget = false;
         TMP_Text count = Label("Count", badge, font, GameManager.BombPrice + "\n<size=55%>COIN</size>", Vector2.zero, new Vector2(76, 50), 27);
-        NeonBombIcon icon = Rect("BombIcon", bombRect, Vector2.zero, new Vector2(94, 94)).gameObject.AddComponent<NeonBombIcon>();
-        icon.raycastTarget = false;
+        Sprite bombIcon = AssetDatabase.LoadAssetAtPath<Sprite>(BoosterIconPath + "CellBomb.png");
+        Sprite changeIcon = AssetDatabase.LoadAssetAtPath<Sprite>(BoosterIconPath + "ChangePiece.png");
+        AddBoosterIcon("BombIcon", bombRect, new Vector2(-4, 4), 110, bombIcon);
         RectTransform nextCard = Rect("NextPiece", root, new Vector2(0, -824), new Vector2(160, 148));
         CanvasGroup previewGroup = nextCard.gameObject.AddComponent<CanvasGroup>();
         previewGroup.blocksRaycasts = false;
@@ -76,8 +79,8 @@ public static class GameplayPlanningSetup
         Label("Title", card, font, "NO MOVES", new Vector2(0, 274), new Vector2(740, 84), 58)
             .color = new Color32(148, 237, 255, 255);
         Label("Question", card, font, "Use a booster to keep playing.", new Vector2(0, 197), new Vector2(740, 60), 34);
-        Button offerBomb = OfferButton("UseBomb", card, font, 76, "CELL BOMB", "Clear one cell", GameManager.BombPrice);
-        Button offerDiscard = OfferButton("UseDiscard", card, font, -76, "CHANGE PIECE", "Get the next ring", GameManager.ChangePiecePrice);
+        Button offerBomb = OfferButton("UseBomb", card, font, 76, "CELL BOMB", "Clear one cell", GameManager.BombPrice, bombIcon);
+        Button offerDiscard = OfferButton("UseDiscard", card, font, -76, "CHANGE PIECE", "Get the next ring", GameManager.ChangePiecePrice, changeIcon);
         Button endRun = SettingsAction("EndRun", card, font, "END RUN", -257, 448, 94,
             new Color32(41, 30, 77, 255), new Color32(130, 106, 173, 255), 32);
         BoosterOfferPanelUI offer = offerRoot.gameObject.AddComponent<BoosterOfferPanelUI>();
@@ -189,16 +192,17 @@ public static class GameplayPlanningSetup
     }
 
     private static Button OfferButton(string name, Transform parent, TMP_FontAsset font,
-        float y, string caption, string description, int price)
+        float y, string caption, string description, int price, Sprite icon)
     {
         RectTransform rect = Rect(name, parent, new Vector2(0, y), new Vector2(740, 130));
         var surface = rect.gameObject.AddComponent<RoundedPanelGraphic>();
         surface.SetStyle(new Color32(57, 43, 130, 255), new Color32(119, 148, 230, 255), 28);
         Button button = rect.gameObject.AddComponent<Button>();
         button.targetGraphic = surface;
-        Label("Label", rect, font, caption, new Vector2(-100, 23), new Vector2(446, 48), 36)
+        AddBoosterIcon("BoosterIcon", rect, new Vector2(-285, 0), 96, icon);
+        Label("Label", rect, font, caption, new Vector2(-50, 23), new Vector2(346, 48), 36)
             .alignment = TextAlignmentOptions.MidlineLeft;
-        var detail = Label("Description", rect, font, description, new Vector2(-100, -25), new Vector2(446, 42), 27);
+        var detail = Label("Description", rect, font, description, new Vector2(-50, -25), new Vector2(346, 42), 27);
         detail.alignment = TextAlignmentOptions.MidlineLeft;
         detail.color = new Color32(184, 190, 227, 255);
         RectTransform badge = Rect("Price", rect, new Vector2(233, 0), new Vector2(202, 72));
@@ -208,6 +212,14 @@ public static class GameplayPlanningSetup
         Label("PriceLabel", badge, font, price + " COIN", Vector2.zero, new Vector2(178, 58), 28)
             .color = new Color32(255, 218, 143, 255);
         return button;
+    }
+
+    private static void AddBoosterIcon(string name, Transform parent, Vector2 position, float size, Sprite sprite)
+    {
+        Image icon = Rect(name, parent, position, Vector2.one * size).gameObject.AddComponent<Image>();
+        icon.sprite = sprite;
+        icon.preserveAspect = true;
+        icon.raycastTarget = false;
     }
 
     private static void Stretch(RectTransform rect)

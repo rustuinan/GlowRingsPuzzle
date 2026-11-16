@@ -226,8 +226,8 @@ public static class MobileMenuSetup
     {
         if (row.Find("Daily Tasks") == null)
         {
-            Feature("Daily Tasks", row, "DAILY\nTASKS", "Icons White/Navigation/List.png",
-                MenuPage.DailyTasks, new Color32(36, 56, 90, 245), Cyan);
+            Feature("Daily Tasks", row, "DAILY\nTASKS", "Assets/_Game/Art/InterfaceIcons/DailyTasks.png",
+                MenuPage.DailyTasks, new Color32(36, 56, 90, 245), Cyan, 96);
             row.Find("Daily Tasks").SetSiblingIndex(row.Find("Shop").GetSiblingIndex());
         }
         foreach (Transform card in row)
@@ -240,11 +240,12 @@ public static class MobileMenuSetup
         }
     }
 
-    private static void Feature(string name, Transform parent, string caption, string icon, MenuPage page, Color fill, Color border)
+    private static void Feature(string name, Transform parent, string caption, string icon, MenuPage page, Color fill, Color border,
+        float iconSize = 82)
     {
         Button button = Card(name, parent, fill, border); LayoutElement le = button.gameObject.AddComponent<LayoutElement>(); le.flexibleWidth = 1; le.minWidth = 0;
         RectTransform rect = (RectTransform)button.transform;
-        Icon("Icon", rect, icon, new Vector2(0, 45), 82);
+        Icon("Icon", rect, icon, new Vector2(0, 45), iconSize);
         Text("Title", rect, caption, new Vector2(0, -50), new Vector2(275, 86), 34);
         Text("Availability", rect, page == MenuPage.DailySpin ? "FREE" : page == MenuPage.DailyReward ? "CLAIM" : "", new Vector2(92, 78), new Vector2(105, 30), 21, border);
         Action(button, page);
@@ -286,6 +287,7 @@ public static class MobileMenuSetup
     private static void Icon(string name, Transform parent, string path, Vector2 position, float size)
     {
         Image image = Rect(name, parent, position, new Vector2(size, size)).gameObject.AddComponent<Image>();
-        image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(Icons + path); image.preserveAspect = true; image.raycastTarget = false;
+        string assetPath = path.StartsWith("Assets/", StringComparison.Ordinal) ? path : Icons + path;
+        image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath); image.preserveAspect = true; image.raycastTarget = false;
     }
 }

@@ -46,16 +46,8 @@ public sealed class DailySpinUI : MonoBehaviour
         var root = Rect("Daily Spin Window", parent, Vector2.zero, Vector2.zero);
         root.anchorMin = Vector2.zero; root.anchorMax = Vector2.one; root.offsetMin = root.offsetMax = Vector2.zero;
         root.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0.48f);
-        var ui = root.gameObject.AddComponent<DailySpinUI>(); ui.config = config; ui.font = font;
-        if (GameLanguage.IsTurkish)
-        {
-            var turkishFont = Resources.Load<TMP_FontAsset>("DailyReward Turkish SDF");
-            if (turkishFont != null)
-            {
-                ui.font = turkishFont;
-                ui.fontStyle = FontStyles.Normal;
-            }
-        }
+        var ui = root.gameObject.AddComponent<DailySpinUI>(); ui.config = config; ui.font = GameLanguage.UiFont(font);
+        if (GameLanguage.IsTurkish && ui.font != null) ui.fontStyle = FontStyles.Normal;
         ui.Build(); ui.Present(); return ui;
     }
     private void OnEnable() { CosmeticsSave.Changed += RefreshWallet; }

@@ -195,7 +195,7 @@ public sealed class CosmeticsStoreUI : MonoBehaviour
 
     private void StyleBody(TMP_Text label)
     {
-        var regular = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF - Fallback");
+        var regular = Resources.Load<TMP_FontAsset>(GameLanguage.IsTurkish ? "Shop Body Turkish SDF" : "Fonts & Materials/LiberationSans SDF - Fallback");
         if (regular != null) label.font = regular;
         else if (coinShop != null && coinShop.BodyFont != null) label.font = coinShop.BodyFont;
         label.characterSpacing = 0;

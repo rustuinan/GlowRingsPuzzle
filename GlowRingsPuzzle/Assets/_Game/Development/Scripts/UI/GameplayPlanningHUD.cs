@@ -21,7 +21,11 @@ public class GameplayPlanningHUD : MonoBehaviour
         instruction = hint; preview = next; targets = targetGraphic; previewGroup = group; boosterOffer = offer;
     }
 
-    private void OnEnable() { if (bombButton != null) bombButton.onClick.AddListener(OnBombClicked); }
+    private void OnEnable()
+    {
+        if (bombButton != null) bombButton.onClick.AddListener(OnBombClicked);
+        if (instruction != null) GameLanguage.ApplyUiFont(instruction);
+    }
     private void OnDisable()
     {
         if (bombButton != null) bombButton.onClick.RemoveListener(OnBombClicked);

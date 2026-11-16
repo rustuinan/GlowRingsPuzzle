@@ -24,7 +24,7 @@ internal static class VibrationSettingsRow
         float labelWidth = width * .5f - 200 - left;
         var label = Rect("Label", row, new Vector2(left + labelWidth * .5f, 0), new Vector2(labelWidth, 72))
             .gameObject.AddComponent<TextMeshProUGUI>();
-        label.font = soundLabel.font;
+        label.font = GameLanguage.UiFont(soundLabel.font);
         label.fontSize = soundLabel.fontSize;
         label.enableAutoSizing = true;
         label.fontSizeMin = 24;

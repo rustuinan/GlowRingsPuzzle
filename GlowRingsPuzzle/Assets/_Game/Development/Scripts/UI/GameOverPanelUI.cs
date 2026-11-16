@@ -370,6 +370,7 @@ public class GameOverPanelUI : MonoBehaviour
 
         if (extraLifeButtonLabel != null)
         {
+            GameLanguage.ApplyUiFont(extraLifeButtonLabel);
             extraLifeButtonLabel.text = ready ? GameLanguage.Choose("EXTRA LIFE", "EKSTRA CAN") : GameLanguage.Choose("LOADING", "YÜKLENİYOR");
         }
     }
